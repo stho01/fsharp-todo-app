@@ -48,8 +48,6 @@ module TodoDto =
           Done = domain.Done |> Some
           CreatedDate = domain.CreatedDate |> Some }
 
-    
-
 module TodoListDto =
     let toDomain dto: TodoList =
         let name =

@@ -39,8 +39,6 @@ let removeTodoFromList
     saveTodoList
     : RemoveTodoFromList =
         
-
-            
     fun todoList todo ->
         let updatedList =
             todoList.Todos
