@@ -33,7 +33,12 @@ let deserialize<'a> (json: Result<string, string>) =
     match json with
     | Ok json -> JsonSerializer.Deserialize<'a> json |> Ok
     | Error err -> Error err
-    
+
+let deserializeOption<'a> (json: Result<string, string>) =
+    match json with
+    | Ok json -> JsonSerializer.Deserialize<'a> json |> Some
+    | Error _ -> None
+
 let jsonFile fileName =
         let fileInfo = fileName |> FileInfo
         match fileInfo.Extension with
@@ -43,3 +48,5 @@ let jsonFile fileName =
 let fileNameWithoutExtension (fileInfo: FileInfo) =
     fileInfo.FullName
     |> Path.GetFileNameWithoutExtension
+    
+let fileName (fileInfo: FileInfo) = fileInfo.FullName

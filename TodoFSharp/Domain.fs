@@ -2,7 +2,7 @@
 
 open System
 
- // DOMAIN
+ // DOMAIN Models ===============================================
  
 type TodoId = private TodoId of Guid
 type TodoListName = private TodoListName of string
@@ -19,11 +19,13 @@ type TodoList = {
     Todos: Todo list
 }
 
-type CreateTodoList =
+ // DOMAIN Workflows ===============================================
+
+type CreateList =
     string
      -> Result<TodoList, string>
 
-type AddTodoToTodoList =
+type AddTodoToList =
     TodoList
      -> Todo
      -> TodoList
@@ -33,19 +35,22 @@ type RemoveTodoFromList =
      -> Todo
      -> TodoList
      
-type GetTodoList =
+type GetList =
     TodoListName -> Result<TodoList, string>
-     
+    
+type GetLists =
+    unit -> Result<TodoList list, string>
+    
 type GetTodo =
     TodoListName
      -> TodoId
      -> Result<TodoList * Todo, string>
 
-type GetTodoLists =
-    unit -> Result<TodoList list, string>
-    
 type UpdateTodo = Todo -> Result<TodoList, string>
-    
+
+
+// ===============================================
+
 module TodoId =
     let newId () = Guid.NewGuid() |> TodoId
     let empty = Guid.Empty |> TodoId

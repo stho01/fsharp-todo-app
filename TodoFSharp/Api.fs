@@ -7,9 +7,9 @@ open Microsoft.FSharp.Core
 open TodoFSharp.Domain
 open TodoFSharp.Dto
 
-// Dependencies ====================================================
+// Services ====================================================
 
-let private toUrl todoListName = $"/list/{todoListName}"
+let private resolveUrl todoListName = $"/list/{todoListName}"
 
 let private listExists listName =
     let file = $"data/{listName}.json" |> FileInfo
@@ -33,27 +33,38 @@ let private fetchTodoList (name: TodoListName): Result<TodoList, string> =
     |> Utils.deserialize<TodoListDto>
     |> Result.map TodoListDto.toDomain
     
-let private fetchTodoListNames () =
-    Directory.GetFiles "data"
-    |> Seq.choose Utils.jsonFile
-    |> Seq.map Utils.fileNameWithoutExtension
-    |> Seq.map toUrl
-
-let private fetchTodoLists () =
-    Directory.GetFiles "data"
-    |> Seq.choose Utils.jsonFile
-    |> Seq.map Utils.readAllText
-    |> Seq.map Utils.deserialize<TodoList> 
-    |> Seq.choose (fun item ->
-        match item with
-        | Ok todoList -> todoList |> Some
-        | Error _ -> None)
-    |> Seq.toList
+let private fetchTodoLists index =
+    let files =
+        Directory.GetFiles "data"
+        |> Array.choose Utils.jsonFile
+        
+    let skip = index * 5
+    let take = Math.Min(files.Length, 5);
+    
+    files
+    |> Array.toList
+    |> List.skip skip
+    |> List.take take
+    |> List.map Utils.fileName
+    |> List.map Utils.readAllText
+    |> List.choose Utils.deserializeOption<TodoListDto>
+    |> List.map (TodoListDto.toDetails resolveUrl)
+    
+//let private fetchTodoLists () =
+//    Directory.GetFiles "data"
+//    |> Seq.choose Utils.jsonFile
+//    |> Seq.map Utils.readAllText
+//    |> Seq.map Utils.deserialize<TodoList> 
+//    |> Seq.choose (fun item ->
+//        match item with
+//        | Ok todoList -> todoList |> Some
+//        | Error _ -> None)
+//    |> Seq.toList
 
 // API ===============================================================
 
 let getTodoListsRequestHandler =
-    Func<IResult>(fun () -> Results.Ok (fetchTodoListNames ()))
+    Func<IResult>(fun () -> Results.Ok (fetchTodoLists 0))
 
 let getTodoListRequestHandler =
     let workflow =

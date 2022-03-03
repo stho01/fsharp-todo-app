@@ -11,7 +11,7 @@ let internal allTodoExcept todo =
 let createTodoList
     checkExistence
     saveTodoList
-    : CreateTodoList =
+    : CreateList =
         
     fun name ->
         match TodoListName.create name with
@@ -28,7 +28,7 @@ let createTodoList
 
 let addTodoToList
     saveTodoList
-    : AddTodoToTodoList =
+    : AddTodoToList =
         
     fun todoList todo -> 
         let updatedTodos = todo :: todoList.Todos
@@ -50,7 +50,7 @@ let removeTodoFromList
 
 let getTodoList
     fetchTodoList
-    : GetTodoList =
+    : GetList =
     fun name ->
         let todoList = fetchTodoList name
     
@@ -71,7 +71,7 @@ let getTodo
             | None -> Error $"Todo with ID {id} was not found" 
         | Error err -> Error err
 
-let getTodoLists fetchTodoLists : GetTodoLists =
+let getTodoLists fetchTodoLists : GetLists =
     fun () -> fetchTodoLists ()
     
 let updateTodo
