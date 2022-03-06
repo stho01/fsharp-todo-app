@@ -2,6 +2,11 @@
 
 open System
 
+type PagedData<'TItem> =
+    { Page: int
+      Total: int
+      Payload: 'TItem list }
+
 type Todo =
     { Id: Guid
       Todo: string
@@ -12,14 +17,8 @@ type TodoList =
     { Name: string
       Todos: Todo list }
 
-type TodoListDetails =
-    { Name: string
-      NumberOfTodos: int }
-    
 type FrontPage =
-    { TodoLists: TodoListDetails list }
-    
-    
+    { TodoLists: PagedData<TodoList> }
     
 type TodoListPage =
     { TodoList: TodoList }

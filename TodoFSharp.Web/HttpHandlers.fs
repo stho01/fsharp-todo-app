@@ -1,28 +1,31 @@
 ﻿module TodoFSharp.Web.HttpHandlers
 
 open Microsoft.AspNetCore.Http
+open TodoFSharp.Web.Dto
 open TodoFSharp.Web.ViewModels
 open TodoFSharp.Web.Views
 open Giraffe
+open TodoFSharp.WebClient
 
 let indexHandler : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
-        
-        let todos =
-            TodoServiceClient.getTodoLists ()
+        let pageResult =
+            TodoClient.getTodoLists ()
             |> Async.RunSynchronously
-            |> Utils.deserialize<TodoListDetails list>
+            // |> (PagedResultDto.toViewModel TodoListDto.toViewModel)
         
-        let view = FrontPage.view { TodoLists = todos }
+        let a = pageResult |> (PagedResultDto.toViewModel TodoListDto.toViewModel)
+        
+        let view = FrontPage.view { TodoLists = a }
         
         htmlView view next ctx
 
 let todoListHandler name : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
         let list =
-            TodoServiceClient.getTodoList name
+            TodoClient.getTodoList name
             |> Async.RunSynchronously
-            |> Utils.deserialize<TodoList>
+            |> TodoListDto.toViewModel
         
         let view = TodoListPage.view { TodoList = list }
         

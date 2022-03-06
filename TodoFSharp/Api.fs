@@ -7,6 +7,7 @@ open Microsoft.AspNetCore.Mvc
 open Microsoft.FSharp.Core
 open TodoFSharp.Domain
 open TodoFSharp.Dto
+open TodoFSharp.WebClient.Dto
 
 // Services ====================================================
 

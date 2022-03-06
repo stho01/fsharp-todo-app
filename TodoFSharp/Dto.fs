@@ -2,38 +2,15 @@
 
 open System
 open TodoFSharp.Domain
-
-type TodoDto = {
-    Id: string option
-    Todo: string
-    Done: bool option
-    CreatedDate: DateTimeOffset option
-}
-
-type TodoListDto = {
-    Name: string
-    Todos: TodoDto list option
-}
-
-type TodoListDetailsDto = {
-    Name: string
-    NumberOfTodos: int
-    Url: string
-}
-
-type PagedResult<'TItem> = {
-    Page: int
-    Total: int
-    Payload: 'TItem list 
-}
+open TodoFSharp.WebClient.Dto
 
 module TodoDto =
     
-    let private getId dto =
+    let private getId (dto: TodoDto) =
         dto.Id
         |> Option.bind TodoId.createOption
     
-    let toDomain dto: Todo =
+    let toDomain (dto: TodoDto): Todo =
         let id =
             match getId dto with
             | Some id -> id

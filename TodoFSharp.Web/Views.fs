@@ -1,10 +1,27 @@
 ﻿namespace TodoFSharp.Web.Views
 
-open System
 open Giraffe.ViewEngine
 open TodoFSharp.Web.ViewModels
+open Zanaptak.TypedCssClasses
+open Utils
+
+type css = CssClasses<"WebRoot/style/bootstrap/dist/css/bootstrap.css", Naming.PascalCase>
+
 
 module Layout =
+    
+    let appHeader =
+        header [ _classList [css.P3; css.BgDark; css.TextWhite] ] [
+            div [ _class css.Container ] [
+                div [ _classList [ css.DFlex; css.FlexWrap; css.AlignItemsCenter ] ] [
+                    p [ _classList [css.FwBold; css.Fs4; css.M0] ] [
+                        str "Todo"
+                        span [ _class css.FwLight ] [ str "App" ]
+                    ]
+                ]
+            ]
+        ]
+    
     let view (content: XmlNode list) =
         html [] [
             head [] [
@@ -14,16 +31,35 @@ module Layout =
                        _href $"/style/bootstrap/dist/css/bootstrap.css" ]
             ]
             body [] [
-                header [ _class "app-header" ] [
-                    div [ _class "app-header__content" ] [
-                        encodedText "Todo"
-                        span [ _class "text-thin" ] [ encodedText "App" ]    
-                    ]
-                ]
-                main [] content
+                appHeader
+                main [ _class css.Mt4 ] content
                 script [ _src "/style/bootstrap/dist/js/bootstrap.js" ] []
             ]
         ]
+
+
+module Shared =
+    let todoListCard (model: TodoList) =
+        
+        // list items 
+        let listItem (index: int) (model: Todo) =
+            li [ _classList [ css.ListGroupItem; css.DFlex; css.AlignItemsCenter ] ] [
+                input [ _id $"done.[{index}]"; _name "done"; _type "checkbox"; _classList [css.FormCheckInput; css.Me3] ]
+                label [ _for $"done.[{index}]" ] [ encodedText model.Todo ]
+            ]
+            
+        let todoLists = model.Todos |> List.mapi listItem
+        
+        div [ _classList [css.Card] ] [
+            div [ _class css.CardHeader ] [
+                 h5 [ ] [ encodedText model.Name ]
+            ]
+            ul [ _classList [css.ListGroup; css.ListGroupFlush] ] todoLists
+            div [ _class css.CardBody ] [
+                button [ _id "btnSaveTodos"; _classList [css.Btn; css.BtnPrimary] ] [ encodedText "Save" ]                        
+            ]
+        ]
+    
 
 module FrontPage =
 
@@ -32,40 +68,31 @@ module FrontPage =
             a [ _href $"/list/{todo.Name}"] [ encodedText todo.Name ]
         ]
         
-    let private todoDetailsList (todos: TodoListDetails list) =
-        let links = (todos |> List.map todoDetailsLink)
+    let private todoDetailsList (todos: TodoList list) =
         
-        div [] links
+        let row todoList =
+            div [ _class css.Col4 ] [
+                Shared.todoListCard todoList
+            ]
+        
+        let cards = (todos |> List.map row)
+        
+        div [ _class css.Row ] cards
     
     let view (model: FrontPage) = 
         [
-            div [ _class "container" ] [
+            div [ _class css.Container ] [
                 h1 [] [ encodedText "Todos" ]
-                todoDetailsList model.TodoLists
+                todoDetailsList model.TodoLists.Payload
             ]
         ] |> Layout.view
         
         
 module TodoListPage =
-    let private todoRow (index: int) (model: Todo) =
-        li [ _class "list-group-item d-flex align-items-center" ] [
-            input [ _id $"done.[{index}]"; _name "done"; _type "checkbox"; _class "form-check-input me-3" ]
-            label [ _for $"done.[{index}]" ] [ encodedText model.Todo ]
-        ]
-    
     let view (model: TodoListPage) =
-        let todoLists = model.TodoList.Todos |> List.mapi todoRow
         [
-            div [ _class "container" ] [
-                div [ _class "card pa-5"; _style "width: 450px"] [
-                    div [ _class "card-header" ] [
-                         h5 [ ] [ encodedText model.TodoList.Name ]
-                    ]
-                    ul [ _class "list-group list-group-flush" ] todoLists
-                    div [ _class "card-body" ] [
-                        button [ _id "btnSaveTodos"; _class "btn btn-primary" ] [ encodedText "Save" ]                        
-                    ]
-                ]
+            div [ _class css.Container ] [
+                Shared.todoListCard model.TodoList
             ]
         ]
         |> Layout.view
