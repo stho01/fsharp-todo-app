@@ -50,17 +50,6 @@ let private fetchTodoLists index =
     |> List.choose Utils.deserializeOption<TodoListDto>
     |> List.map (TodoListDto.toDetails resolveUrl)
     
-//let private fetchTodoLists () =
-//    Directory.GetFiles "data"
-//    |> Seq.choose Utils.jsonFile
-//    |> Seq.map Utils.readAllText
-//    |> Seq.map Utils.deserialize<TodoList> 
-//    |> Seq.choose (fun item ->
-//        match item with
-//        | Ok todoList -> todoList |> Some
-//        | Error _ -> None)
-//    |> Seq.toList
-
 // API ===============================================================
 
 let getTodoListsRequestHandler =
