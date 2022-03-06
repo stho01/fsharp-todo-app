@@ -1,5 +1,6 @@
 ﻿module TodoFSharp.Utils
 
+open System
 open System.IO
 open System.Text.Json
 
@@ -50,3 +51,6 @@ let fileNameWithoutExtension (fileInfo: FileInfo) =
     |> Path.GetFileNameWithoutExtension
     
 let fileName (fileInfo: FileInfo) = fileInfo.FullName
+
+
+let min (a: int) (b:int) = Math.Min(a, b)

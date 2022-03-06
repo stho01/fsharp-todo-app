@@ -3,6 +3,7 @@
 open System
 open System.IO
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.Mvc
 open Microsoft.FSharp.Core
 open TodoFSharp.Domain
 open TodoFSharp.Dto
@@ -33,28 +34,53 @@ let private fetchTodoList (name: TodoListName): Result<TodoList, string> =
     |> Utils.deserialize<TodoListDto>
     |> Result.map TodoListDto.toDomain
     
-let private fetchTodoLists index =
+let private fetchTodoLists page take =
     let files =
         Directory.GetFiles "data"
         |> Array.choose Utils.jsonFile
+
+    let take =
+        match take with
+        | Some take -> take
+        | None -> 5
+        |> min files.Length
+        |> max 1
         
-    let skip = index * 5
-    let take = Math.Min(files.Length, 5);
+    let page =
+        page
+        |> min (files.Length / take)
+        |> max 1
+        
+    let skip =
+        take * page
+        |> min (files.Length - take)
+        |> max 0
     
-    files
-    |> Array.toList
-    |> List.skip skip
-    |> List.take take
-    |> List.map Utils.fileName
-    |> List.map Utils.readAllText
-    |> List.choose Utils.deserializeOption<TodoListDto>
-    |> List.map (TodoListDto.toDetails resolveUrl)
+    let payload =
+        files
+        |> Array.toList
+        |> List.skip skip
+        |> List.take take
+        |> List.map Utils.fileName
+        |> List.map Utils.readAllText
+        |> List.choose Utils.deserializeOption<TodoListDto>
     
+    { Page = page 
+      Total = files.Length
+      Payload = payload }
+    
+        
 // API ===============================================================
 
-let getTodoListsRequestHandler =
-    Func<IResult>(fun () -> Results.Ok (fetchTodoLists 0))
 
+let getTodoListsRequestHandler =
+    Func<Nullable<int>, Nullable<int>, IResult>(fun (page: Nullable<int>) (take: Nullable<int>) ->
+        match (page.HasValue, take.HasValue) with
+        | (true, true) -> Results.Ok (fetchTodoLists page.Value (Some take.Value))
+        | (true, false) -> Results.Ok (fetchTodoLists page.Value None)
+        | _ -> Results.Ok (fetchTodoLists 0 None) )
+    
+    
 let getTodoListRequestHandler =
     let workflow =
         Implementation.getTodoList fetchTodoList

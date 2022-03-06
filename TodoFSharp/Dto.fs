@@ -21,6 +21,12 @@ type TodoListDetailsDto = {
     Url: string
 }
 
+type PagedResult<'TItem> = {
+    Page: int
+    Total: int
+    Payload: 'TItem list 
+}
+
 module TodoDto =
     
     let private getId dto =
@@ -93,4 +99,5 @@ module TodoListDetailsDto =
           NumberOfTodos = domain.Todos |> List.length
           Url = domain.Name |> toUrl  }
         
+    
     
