@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="style/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="pt-5">
+
+<div class="container">
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+
+            <div class="card todo-list-card">
+                <div class="card-header">
+                    <h5>Todo List</h5>
+                </div>
+
+                <ul class=" list-group list-group-flush todo-list-card__todos">
+                    <li class="list-group-item d-flex align-items-center">
+                        <input class="form-check-input me-3" type="checkbox" id="check1">
+                        <label class="form-check-label" for="check1">Husk å ta oppvasken</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input class="form-check-input me-3" type="checkbox" id="check2">
+                        <label class="form-check-label" for="check2">Husk å ta oppvasken</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input class="form-check-input me-3" type="checkbox" id="check3">
+                        <label class="form-check-label" for="check3">Husk å ta oppvasken</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input class="form-check-input me-3" type="checkbox" id="check4">
+                        <label class="form-check-label" for="check4">Husk å ta oppvasken</label>
+                    </li>
+                </ul>
+
+                <div class="px-3 py-1 d-flex align-items-center">
+                    <i class="text-muted fa fa-plus me-3"></i>
+                    <input type="text" class="form-control-plaintext px-2 form-control-sm w-100 todo-list-card__new" placeholder="Listelement">
+                </div>
+
+                <ul class="list-group list-group-flush todo-list-card__completed text-decoration-line-through">
+                    <li class="list-group-item">
+                        <input class="form-check-input me-3" type="checkbox" id="check5" checked>
+                        <label class="form-check-label" for="check5">Husk å ta oppvasken</label>
+                    </li>
+                </ul>
+
+<!--                <div class="card-body d-flex justify-content-end">-->
+<!--                    <button type="button" class="btn btn-icon mx-1">-->
+<!--                        <i class="fa fa-ellipsis-v"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="btn btn-icon mx-1">-->
+<!--                        <i class="fa fa-ellipsis-v"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="btn btn-icon mx-1">-->
+<!--                        <i class="fa fa-ellipsis-v"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="btn btn-icon mx-1">-->
+<!--                        <i class="fa fa-ellipsis-v"></i>-->
+<!--                    </button>-->
+<!--                </div>-->
+
+            </div>
+
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
+<script src="style/bootstrap/dist/js/bootstrap.js"></script>
+<!--<script type="module" src="scripts/todo-list-card.js"></script>-->
+<script type="module">
+    import TodoListCard from "./scripts/todo-list-card.js";
+
+    const todoListContainers = [...document.querySelectorAll(".todo-list-card")];
+    const cards = todoListContainers.map(container => {
+        const todoList = new TodoListCard(container);
+        todoList.init();
+        return todoList;
+    })
+</script>
+</body>
+</html>

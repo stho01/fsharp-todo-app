@@ -5,18 +5,20 @@ open TodoFSharp.Web.ViewModels
 open Zanaptak.TypedCssClasses
 open Utils
 
-type css = CssClasses<"WebRoot/style/bootstrap/dist/css/bootstrap.css", Naming.PascalCase>
+type bs = CssClasses<"WebRoot/style/bootstrap/dist/css/bootstrap.css", Naming.PascalCase>
+type fa = CssClasses<"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", Naming.PascalCase>
+type css = CssClasses<"WebRoot/style/style.css", Naming.PascalCase>
 
 
 module Layout =
     
     let appHeader =
-        header [ _classList [css.P3; css.BgDark; css.TextWhite] ] [
-            div [ _class css.Container ] [
-                div [ _classList [ css.DFlex; css.FlexWrap; css.AlignItemsCenter ] ] [
-                    p [ _classList [css.FwBold; css.Fs4; css.M0] ] [
+        header [ _classList [bs.P3; bs.BgDark; bs.TextWhite] ] [
+            div [ _class bs.Container ] [
+                div [ _classList [ bs.DFlex; bs.FlexWrap; bs.AlignItemsCenter ] ] [
+                    p [ _classList [bs.FwBold; bs.Fs4; bs.M0] ] [
                         str "Todo"
-                        span [ _class css.FwLight ] [ str "App" ]
+                        span [ _class bs.FwLight ] [ str "App" ]
                     ]
                 ]
             ]
@@ -29,35 +31,65 @@ module Layout =
                 link [ _rel  "stylesheet"
                        _type "text/css"
                        _href $"/style/bootstrap/dist/css/bootstrap.css" ]
+                link [ _rel  "stylesheet"
+                       _type "text/css"
+                       _href $"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" ]
+                link [ _rel  "stylesheet"
+                       _type "text/css"
+                       _href $"/style/style.css" ]
             ]
             body [] [
                 appHeader
-                main [ _class css.Mt4 ] content
+                main [ _class bs.Mt4 ] content
                 script [ _src "/style/bootstrap/dist/js/bootstrap.js" ] []
+                script [ _type "module" ] [
+                    rawText """
+                        import TodoListCard from './scripts/todo-list-card.js';
+                        const todoListContainers = [...document.querySelectorAll('.todo-list-card')];
+                        const cards = todoListContainers.map(container => {
+                            const todoList = new TodoListCard(container);
+                            todoList.init();
+                            return todoList;
+                        })
+                    """
+                ]
             ]
         ]
-
 
 module Shared =
     let todoListCard (model: TodoList) =
         
         // list items 
         let listItem (index: int) (model: Todo) =
-            li [ _classList [ css.ListGroupItem; css.DFlex; css.AlignItemsCenter ] ] [
-                input [ _id $"done.[{index}]"; _name "done"; _type "checkbox"; _classList [css.FormCheckInput; css.Me3] ]
-                label [ _for $"done.[{index}]" ] [ encodedText model.Todo ]
+            li [ _classList [ bs.ListGroupItem; bs.DFlex; bs.AlignItemsCenter ] ] [
+                input [ _id (model.Id.ToString()); _name "done"; _type "checkbox"; _classList [bs.FormCheckInput; bs.Me3] ]
+                label [ _for (model.Id.ToString()) ] [ encodedText model.Todo ]
             ]
-            
-        let todoLists = model.Todos |> List.mapi listItem
+ 
+        let isDone (todo: Todo) = todo.Done = true
+        let notDone (todo: Todo) = todo.Done = false
         
-        div [ _classList [css.Card] ] [
-            div [ _class css.CardHeader ] [
+        let todoLists =
+            model.Todos
+            |> List.where notDone
+            |> List.mapi listItem
+            
+        let completed =
+            model.Todos
+            |> List.where isDone
+            |> List.mapi listItem
+        
+        div [ _classList [bs.Card; "todo-list-card"] ] [
+            input [ _class "todo-list-card__name"; _type "hidden"; _value model.Name ]
+            div [ _class bs.CardHeader ] [
                  h5 [ ] [ encodedText model.Name ]
             ]
-            ul [ _classList [css.ListGroup; css.ListGroupFlush] ] todoLists
-            div [ _class css.CardBody ] [
-                button [ _id "btnSaveTodos"; _classList [css.Btn; css.BtnPrimary] ] [ encodedText "Save" ]                        
+            ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__todos"] ] todoLists
+            div [ _classList [bs.Px3; bs.Py1; bs.DFlex; bs.AlignItemsCenter] ] [
+                i [ _classList [bs.TextMuted; fa.Fa; fa.FaPlus; bs.Me3 ] ] []
+                input [ _type "text"; _classList [bs.FormControlPlaintext; bs.Px2; bs.FormControlSm; bs.W100; "todo-list-card__new"]; _placeholder "Listeelement"]
             ]
+            ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__completed"; bs.TextDecorationLineThrough] ] completed
         ]
     
 
@@ -71,18 +103,17 @@ module FrontPage =
     let private todoDetailsList (todos: TodoList list) =
         
         let row todoList =
-            div [ _class css.Col4 ] [
+            div [ _class bs.Col4 ] [
                 Shared.todoListCard todoList
             ]
         
         let cards = (todos |> List.map row)
         
-        div [ _class css.Row ] cards
+        div [ _class bs.Row ] cards
     
     let view (model: FrontPage) = 
         [
-            div [ _class css.Container ] [
-                h1 [] [ encodedText "Todos" ]
+            div [ _class bs.Container ] [
                 todoDetailsList model.TodoLists.Payload
             ]
         ] |> Layout.view
@@ -91,7 +122,7 @@ module FrontPage =
 module TodoListPage =
     let view (model: TodoListPage) =
         [
-            div [ _class css.Container ] [
+            div [ _class bs.Container ] [
                 Shared.todoListCard model.TodoList
             ]
         ]

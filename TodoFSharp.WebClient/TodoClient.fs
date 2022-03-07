@@ -2,11 +2,13 @@
 
 open System
 open System.Net.Http
+open System.Text.Encodings.Web
 open TodoFSharp.WebClient.Dto
 
 let baseUrl = "https://localhost:7157"
 let getAllTodoListsUrl = "/"
 let getTodoListUrl name = $"/list/{name}"
+let addTodoToListUrl name = $"/list/{name}/todo"
 
 let private client =
     let client = new HttpClient()
@@ -33,4 +35,11 @@ let getTodoList name =
         let result = Utils.deserialize<TodoListDto> content 
         
         return result
+    }
+    
+    
+let addTodoToList name todo =
+    async {
+        let url = addTodoToListUrl name
+        let! response = client.PostAsync(url, "")
     }

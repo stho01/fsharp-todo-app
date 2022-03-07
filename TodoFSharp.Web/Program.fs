@@ -21,7 +21,12 @@ let webApp =
                 route "/" >=> HttpHandlers.indexHandler
                 routef "/list/%s" HttpHandlers.todoListHandler
             ]
-        setStatusCode 404 >=> text "Not Found" ]
+        POST >=>
+            choose [
+                routef "/list/%s/todo" HttpHandlers.addTodoToListHandler
+            ]
+        setStatusCode 404 >=> text "Not Found"
+        ]
 
 // ---------------------------------
 // Error handler

@@ -30,10 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Content" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TodoFSharp.WebClient\TodoFSharp.WebClient.fsproj" />
   </ItemGroup>
 </Project>

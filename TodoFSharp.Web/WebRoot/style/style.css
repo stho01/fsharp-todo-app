@@ -1,0 +1,28 @@
+.btn-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+}
+.btn-icon:hover {
+    background: rgba(0,0,0,.1);
+}
+
+.btn-icon.btn-sm {
+    padding: 0;
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+.btn-icon.btn-lg {
+    padding: 0;
+    display: block;
+    width: 36px;
+    height: 36px;
+}
+
+.todo-list-card__completed * {
+    text-decoration: line-through !important;
+}

@@ -5,6 +5,7 @@ open System.Text.Json
 let private serializeOptions =
     let options = JsonSerializerOptions()
     options.WriteIndented <- true
+    options.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
     options
 
 let serialize value = JsonSerializer.Serialize(value, serializeOptions)

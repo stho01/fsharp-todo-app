@@ -5,6 +5,11 @@ open Microsoft.FSharp.Core
 open TodoFSharp.Web.ViewModels
 open TodoFSharp.WebClient.Dto
     
+[<CLIMutable>]
+type NewTodoDto = {
+    Id: Guid
+    Todo: string
+}
     
 module PagedResultDto =
     
@@ -12,10 +17,9 @@ module PagedResultDto =
         let payload = dto.Payload |> List.map converter 
         
         { Page = dto.Page; Total = dto.Total; Payload = payload }
-        
     
 module TodoDto =
-    let private idOption dto =
+    let private idOption (dto: TodoDto) =
         try
             match dto.Id with
             | Some id -> Guid.Parse id |> Some
