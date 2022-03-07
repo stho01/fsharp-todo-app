@@ -22,7 +22,7 @@ module TodoDto =
     let private idOption (dto: TodoDto) =
         try
             match dto.Id with
-            | Some id -> Guid.Parse id |> Some
+            | Some id -> id |> Some
             | None -> None
         with
         | _ -> None

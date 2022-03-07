@@ -32,7 +32,7 @@ module TodoDto =
           CreatedDate = createdDate }
         
     let toDto (domain: Todo) =
-        { Id = domain.Id |> TodoId.toString |> Some   
+        { Id = domain.Id |> TodoId.value |> Some   
           Todo = domain.Todo
           Done = domain.Done |> Some
           CreatedDate = domain.CreatedDate |> Some }

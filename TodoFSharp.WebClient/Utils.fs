@@ -1,4 +1,4 @@
-﻿module internal TodoFSharp.WebClient.Utils
+﻿module TodoFSharp.WebClient.Utils
 
 open System.Text.Json
 

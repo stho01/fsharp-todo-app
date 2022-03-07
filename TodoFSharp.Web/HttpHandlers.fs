@@ -1,5 +1,6 @@
 ﻿module TodoFSharp.Web.HttpHandlers
 
+open System.Net
 open Microsoft.AspNetCore.Http
 open TodoFSharp.Web.Dto
 open TodoFSharp.Web.ViewModels
@@ -31,11 +32,22 @@ let todoListHandler name : HttpHandler =
         htmlView view next ctx
         
         
-let addTodoToListHandler name: HttpHandler =
+let addTodoToListHandler name : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
         task {
             let! todo = ctx.BindJsonAsync<NewTodoDto>()
-            let a = name
+            let newTodo : TodoDto = {
+                Id = Some todo.Id
+                Todo = todo.Todo
+                Done = Some false
+                CreatedDate = None
+            }
             
-            return! json $"""{{ "Todo": "{todo.Todo}" }}""" next ctx    
+            TodoClient.addTodoToList name newTodo
+            |> Async.RunSynchronously
+            |> ignore
+                
+            ctx.SetStatusCode StatusCodes.Status204NoContent
+                
+            return! next ctx    
         }

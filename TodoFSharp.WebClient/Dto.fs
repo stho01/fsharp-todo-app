@@ -4,7 +4,7 @@ open System
 
 [<CLIMutable>]
 type TodoDto = {
-    Id: string option
+    Id: Guid option
     Todo: string
     Done: bool option
     CreatedDate: DateTimeOffset option

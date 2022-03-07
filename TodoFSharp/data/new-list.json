@@ -1,4 +1,11 @@
 {
   "Name": "new-list",
-  "Todos": []
+  "Todos": [
+    {
+      "Id": "b3dd01c7-e6cc-43a0-9d6f-9dd001c971f2",
+      "Todo": "Test 1234",
+      "Done": false,
+      "CreatedDate": "2022-03-07T21:31:43.5883696+01:00"
+    }
+  ]
 }
