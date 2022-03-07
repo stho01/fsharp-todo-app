@@ -1,5 +1,6 @@
 ﻿module TodoFSharp.Web.HttpHandlers
 
+open System
 open System.Net
 open Microsoft.AspNetCore.Http
 open TodoFSharp.Web.Dto
@@ -50,4 +51,16 @@ let addTodoToListHandler name : HttpHandler =
             ctx.SetStatusCode StatusCodes.Status204NoContent
                 
             return! next ctx    
+        }
+        
+let removeTodoFromList (name: string, id: string) : HttpHandler =
+    fun (next: HttpFunc) (ctx: HttpContext) ->
+        task {
+            let guid = id |> Guid.Parse
+            
+            TodoClient.removeTodoFromList name guid
+            |> Async.RunSynchronously
+            |> ignore
+            
+            return! next ctx
         }

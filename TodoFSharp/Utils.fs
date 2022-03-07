@@ -3,6 +3,7 @@
 open System
 open System.IO
 open System.Text.Json
+open Microsoft.Extensions.Logging
 
 let private resolveFileName fileName =
     match box fileName with
@@ -18,6 +19,18 @@ let readAllText fileName =
     with
     | :? FileNotFoundException -> Error "Todo list not found"
      
+let readAllTextOption (logger: ILogger) fileName =
+    try
+        match resolveFileName fileName with
+        | Ok fileName -> File.ReadAllText fileName |> Some
+        | Error err ->
+            logger.LogWarning err
+            None
+    with
+    | :? FileNotFoundException as ex ->
+        logger.LogError("Failed to read text", ex)
+        None
+
 let writeAllText fileName content =
     File.WriteAllText(fileName, content)
 
@@ -30,15 +43,19 @@ let private serializeOptions =
 let serialize value =
     JsonSerializer.Serialize(value, serializeOptions)
 
-let deserialize<'a> (json: Result<string, string>) =
-    match json with
-    | Ok json -> JsonSerializer.Deserialize<'a> json |> Ok
-    | Error err -> Error err
 
-let deserializeOption<'a> (json: Result<string, string>) =
-    match json with
-    | Ok json -> JsonSerializer.Deserialize<'a> json |> Some
-    | Error _ -> None
+
+let deserialize<'a> (json: string) =
+    try
+        JsonSerializer.Deserialize<'a> json |> Ok
+    with
+    | ex -> Error ex.Message
+
+let deserializeOption<'a> (json: string) =
+    try
+        JsonSerializer.Deserialize<'a> json |> Some
+    with
+    | ex -> None
 
 let jsonFile fileName =
         let fileInfo = fileName |> FileInfo

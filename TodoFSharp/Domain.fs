@@ -21,9 +21,13 @@ type TodoList = {
 
  // DOMAIN Workflows ===============================================
 
-type CreateList =
-    string
-     -> Result<TodoList, string>
+type DomainError =
+    | TodoListDoesNotExist of string
+    | TodoDoesNotExist of string
+    | GenericError of string
+    | FailedToUpdateTodo of string
+
+type CreateList = string -> Result<TodoList, DomainError>
 
 type AddTodoToList =
     TodoList
@@ -35,18 +39,15 @@ type RemoveTodoFromList =
      -> Todo
      -> TodoList
      
-type GetList =
-    TodoListName -> Result<TodoList, string>
-    
-type GetLists =
-    unit -> Result<TodoList list, string>
+type GetList = TodoListName -> TodoList option
+type GetLists = unit -> TodoList list
     
 type GetTodo =
     TodoListName
      -> TodoId
-     -> Result<TodoList * Todo, string>
+     -> TodoList option * Todo option 
 
-type UpdateTodo = Todo -> Result<TodoList, string>
+type UpdateTodo = Todo -> Result<TodoList, DomainError>
 
 
 // ===============================================
@@ -59,7 +60,7 @@ module TodoId =
         match box id with
         | :? Guid as id -> id |> TodoId |> Ok
         | :? string as s -> Guid.Parse s |> TodoId |> Ok
-        | _ -> Error "The TodoId must be a guid"
+        | _ ->  Error "The TodoId must be a guid"
         
     let createOption id =
         match box id with

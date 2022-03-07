@@ -19,6 +19,7 @@ let main args =
     let builder = WebApplication.CreateBuilder(args)
     
     let app = builder.Build()
+    
     app.MapGet("/", Api.getTodoListsRequestHandler) |> ignore
     app.MapGet("/list/{name}", Api.getTodoListRequestHandler) |> ignore
     app.MapPost("/list/{name}", Api.newTodoListRequestHandler) |> ignore

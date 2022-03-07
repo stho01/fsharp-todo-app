@@ -11,6 +11,7 @@ let baseUrl = "https://localhost:7157"
 let getAllTodoListsUrl = "/"
 let getTodoListUrl name = $"/list/{name}"
 let addTodoToListUrl name = $"/list/{name}/todo"
+let removeTodoFromListUrl name id = $"/list/{name}/todo/{id}"
 
 let private client =
     let client = new HttpClient()
@@ -39,7 +40,6 @@ let getTodoList name =
         return result
     }
     
-    
 let addTodoToList (name: string) (todo: TodoDto) =
     async {
         let url = addTodoToListUrl name
@@ -52,6 +52,21 @@ let addTodoToList (name: string) (todo: TodoDto) =
         
         let! response =
             client.PostAsync(url, requestBody)
+            |> Async.AwaitTask
+            
+        let! responseBody =
+            response.Content.ReadAsStringAsync()
+            |> Async.AwaitTask
+        
+        return Utils.deserialize<TodoListDto> responseBody
+    }
+    
+let removeTodoFromList (name: string) (id: Guid) =
+    async {
+        let url = removeTodoFromListUrl name id
+        
+        let! response =
+            client.DeleteAsync(url)
             |> Async.AwaitTask
             
         let! responseBody =

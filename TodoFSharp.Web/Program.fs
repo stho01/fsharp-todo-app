@@ -25,6 +25,10 @@ let webApp =
             choose [
                 routef "/list/%s/todo" HttpHandlers.addTodoToListHandler
             ]
+        DELETE >=>
+            choose [
+                routef "/list/%s/todo/%s" HttpHandlers.removeTodoFromList
+            ]
         setStatusCode 404 >=> text "Not Found"
         ]
 

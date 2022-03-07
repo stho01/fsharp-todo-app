@@ -13,18 +13,19 @@ let createTodoList
     saveTodoList
     : CreateList =
         
+    let todoList listName =
+        match checkExistence listName with
+        | (true, list) -> list
+        | (false, _) ->
+            listName
+            |> TodoList.create
+            |> saveTodoList
+        
     fun name ->
+        let validatedName = TodoListName.create name
         match TodoListName.create name with
-        | Ok listName ->
-            match checkExistence listName with
-            | true -> Error "Failed to create list, list with that name already exists."
-            | false ->
-                listName
-                |> TodoList.create
-                |> saveTodoList
-                |> Ok
-                
-        | Error err -> Error err
+        | Ok listName -> todoList listName |> Ok
+        | Error err -> DomainError.GenericError err |> Error
 
 let addTodoToList
     saveTodoList
@@ -51,25 +52,16 @@ let removeTodoFromList
 let getTodoList
     fetchTodoList
     : GetList =
-    fun name ->
-        let todoList = fetchTodoList name
+    fun name -> fetchTodoList name
     
-        match todoList with
-        | Ok todoList -> todoList |> Ok
-        | Error err -> Error err
-
 let getTodo
     fetchTodoList
     : GetTodo =
+
     fun listName id ->
-        
         match fetchTodoList listName with
-        | Ok list ->
-            let todoOption = list.Todos |> List.tryFind (Todo.withId id)
-            match todoOption with
-            | Some todo -> (list, todo) |> Ok
-            | None -> Error $"Todo with ID {id} was not found" 
-        | Error err -> Error err
+        | Some list -> (Some list, list.Todos |> List.tryFind (Todo.withId id))
+        | None -> (None, None)
 
 let getTodoLists fetchTodoLists : GetLists =
     fun () -> fetchTodoLists ()
@@ -90,9 +82,9 @@ let updateTodo
             |> List.exists (fun a -> a.Id = todo.Id)
         
         if result = true then
-            Ok todo
+            Some todo
         else
-            Error $"Todo with {todo.Id} does not exists."
+            None
             
     let doUpdate list todo =
         let updated =
@@ -103,12 +95,15 @@ let updateTodo
         Ok { list with Todos = updated }
     
     let updateTodo todo list =
-        doesNotExist todo list
-        |> Result.bind (doUpdate list)
-        
+        let todo = doesNotExist todo list
+        match todo with
+        | Some todo -> doUpdate list todo
+        | None -> Error "Failed to update todo. Todo entry was not found..."
+    
     fun todo ->
-         todoListName
-         |> TodoListName.create
-         |> Result.bind fetchTodoList
-         |> Result.bind (updateTodo todo)
-         |> Result.map saveTodoList
+        todoListName
+        |> TodoListName.create
+        |> Result.bind fetchTodoList
+        |> Result.bind (updateTodo todo)
+        |> Result.map saveTodoList
+        |> Result.mapError DomainError.FailedToUpdateTodo

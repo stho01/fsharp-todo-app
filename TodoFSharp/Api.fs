@@ -3,7 +3,6 @@
 open System
 open System.IO
 open Microsoft.AspNetCore.Http
-open Microsoft.AspNetCore.Mvc
 open Microsoft.FSharp.Core
 open TodoFSharp.Domain
 open TodoFSharp.Dto
@@ -32,10 +31,10 @@ let private fetchTodoList (name: TodoListName): Result<TodoList, string> =
     |> TodoListName.value
     |> sprintf "data/%s.json"
     |> Utils.readAllText 
-    |> Utils.deserialize<TodoListDto>
+    |> Result.bind Utils.deserialize<TodoListDto>
     |> Result.map TodoListDto.toDomain
     
-let private fetchTodoLists page take =
+let private fetchTodoLists logger page take =
     let files =
         Directory.GetFiles "data"
         |> Array.choose Utils.jsonFile
@@ -63,8 +62,8 @@ let private fetchTodoLists page take =
         |> List.skip skip
         |> List.take take
         |> List.map Utils.fileName
-        |> List.map Utils.readAllText
-        |> List.choose Utils.deserializeOption<TodoListDto>
+        |> List.map (Utils.readAllTextOption logger)
+        |> List.choose (Option.bind Utils.deserializeOption<TodoListDto>)
     
     { Page = page 
       Total = files.Length
@@ -112,21 +111,10 @@ let newTodoListRequestHandler =
 let addTodoToListRequestHandler =
     let addTodoToList = Implementation.addTodoToList saveTodoList
     let getTodoList = Implementation.getTodoList fetchTodoList
-    
-    let validateListName (name, todo) =
-        match (TodoListName.create name) with
-        | Ok name -> Ok (name, todo)
-        | Error err -> Error err
-    
-    let validateTodo (name, todo) =
-        Todo.create todo.Todo
-        |> Result.map (fun todo -> (name, todo))
-    
-    let validateToDoList (name, todo) =
-        match getTodoList name  with
-        | Ok list -> (list, todo) |> Ok
-        | Error err -> Error err
-    
+    let validateListName (name, todo) = (TodoListName.create name) |> Result.map (fun name -> (name, todo))
+    let validateTodo (name, todo) = Todo.create todo.Todo |> Result.map (fun todo -> (name, todo))
+    let validateToDoList (name, todo) = getTodoList name |> Result.map (fun list -> (list, todo)) 
+
     let validate (name, todo) =
         Ok (name, todo)
         |> Result.bind validateListName
@@ -145,30 +133,44 @@ let addTodoToListRequestHandler =
             | Error err -> Results.BadRequest err)
 
 let removeTodoFromListRequestHandler =
-    let workflow = Implementation.removeTodoFromList saveTodoList
+    let removeTodoFromListWorkflow = Implementation.removeTodoFromList saveTodoList
     let getTodo = Implementation.getTodo fetchTodoList
+    let getTodoList = Implementation.getTodoList fetchTodoList
     let validateName (name, id) =
         TodoListName.create name |> Result.map (fun name -> (name, id))
     let validateId (name, id) =
         TodoId.create id |> Result.map (fun id -> (name, id))
-    let validateTodoExistence (name, id) =
-        getTodo name id
+//    let validateTodoExistence (name, id) =
+//        getTodo name id
         
     let validate (name, id) =
         Ok (name, id)
         |> Result.bind validateName
         |> Result.bind validateId
-        |> Result.bind validateTodoExistence
     
     Func<string, Guid, IResult>(
         fun name id ->
             match validate (name, id) with
-            | Ok (list, todo) ->
-                let updatedList =
-                    (workflow list todo)
-                    |> TodoListDto.toDto
+            | Ok (name, id) ->
+                
+                match getTodo name id with
+                | Ok (list, todo) ->
+                    let result = removeTodoFromListWorkflow list todo |> TodoListDto.toDto
+                    Results.Ok result
+                | Error err ->
+                    match err with
+                    | DomainError.TodoDoesNotExist(s) ->
+                        match getTodoList name with
+                        | Ok list -> Results.Ok list
+                        | Error err ->  Results.BadRequest err
+                    | _ -> Results.BadRequest err
                     
-                Results.Ok updatedList  
+                
+//                let updatedList =
+//                    (removeTodoFromListWorkflow list todo)
+//                    |> TodoListDto.toDto
+//                    
+//                Results.Ok updatedList  
             | Error err -> Results.BadRequest err)
 
 let updateTodoRequestHandler =

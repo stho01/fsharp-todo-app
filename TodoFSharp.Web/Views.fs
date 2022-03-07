@@ -57,6 +57,9 @@ module Layout =
         ]
 
 module Shared =
+    
+    let spacer = div [ _class bs.FlexGrow1 ] [] 
+    
     let todoListCard (model: TodoList) =
         
         // list items 
@@ -64,6 +67,10 @@ module Shared =
             li [ _classList [ bs.ListGroupItem; bs.DFlex; bs.AlignItemsCenter ] ] [
                 input [ _id (model.Id.ToString()); _name "done"; _type "checkbox"; _classList [bs.FormCheckInput; bs.Me3] ]
                 label [ _for (model.Id.ToString()) ] [ encodedText model.Todo ]
+                spacer
+                button [ _classList [ "todo-list-card__remove"; bs.Btn; css.BtnIcon; css.BtnSm; bs.TextMuted ] ] [
+                    i [ _classList [fa.Fa; fa.FaClose] ] []
+                ]
             ]
  
         let isDone (todo: Todo) = todo.Done = true
@@ -88,6 +95,7 @@ module Shared =
             div [ _classList [bs.Px3; bs.Py1; bs.DFlex; bs.AlignItemsCenter] ] [
                 i [ _classList [bs.TextMuted; fa.Fa; fa.FaPlus; bs.Me3 ] ] []
                 input [ _type "text"; _classList [bs.FormControlPlaintext; bs.Px2; bs.FormControlSm; bs.W100; "todo-list-card__new"]; _placeholder "Listeelement"]
+                
             ]
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__completed"; bs.TextDecorationLineThrough] ] completed
         ]
