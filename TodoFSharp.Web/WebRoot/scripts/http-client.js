@@ -52,7 +52,6 @@ export class TodoAppHttpClient extends HttpClient {
     }
     
     updateTodo(todoListName, todo) {
-        
         return this._requestWithBody("PUT", `/list/${encodeURIComponent(todoListName)}/todo`, todo);
     }
     
@@ -60,7 +59,7 @@ export class TodoAppHttpClient extends HttpClient {
         return this._request("POST", `/list/${encodeURIComponent(todoListName)}/todo/${encodeURIComponent(todoId)}/complete`);
     }
     
-    uncompleteTodo(todoListName, todoId) {
-        return this._request("POST", `/list/${encodeURIComponent(todoListName)}/todo/${encodeURIComponent(todoId)}/uncomplete`);
+    incompleteTodo(todoListName, todoId) {
+        return this._request("POST", `/list/${encodeURIComponent(todoListName)}/todo/${encodeURIComponent(todoId)}/incomplete`);
     }
 }

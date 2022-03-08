@@ -25,7 +25,7 @@ let webApp =
             choose [
                 routef "/list/%s/todo" HttpHandlers.addTodoToListHandler
                 routef "/list/%s/todo/%s/complete" HttpHandlers.completeTodo
-                routef "/list/%s/todo/%s/uncomplete" HttpHandlers.uncompleteTodo
+                routef "/list/%s/todo/%s/incomplete" HttpHandlers.incompleteTodo
             ]
         DELETE >=>
             choose [

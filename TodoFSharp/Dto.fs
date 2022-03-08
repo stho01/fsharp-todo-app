@@ -54,10 +54,16 @@ module TodoListDto =
         
         { Name = name
           Todos = todos }
-        
+    
     let toDto (domain: TodoList) =
+        let todos =
+            domain.Todos
+            |> List.sortBy Todo.createdDate
+            |> List.map TodoDto.toDto
+            |> Some
+        
         { Name = domain.Name |> TodoListName.value
-          Todos = domain.Todos |> List.map TodoDto.toDto |> Some }
+          Todos = todos }
         
     let numberOfTodos dto =
         match dto.Todos with

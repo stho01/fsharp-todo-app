@@ -75,11 +75,11 @@ let completeTodo (name: string, id: string): HttpHandler =
             return! next ctx
         }
         
-let uncompleteTodo (name: string, id: string): HttpHandler =
+let incompleteTodo (name: string, id: string): HttpHandler =
     fun next ctx ->
         task {
             
-            TodoClient.uncompleteTodo name id
+            TodoClient.incompleteTodo name id
             |> Async.RunSynchronously
             |> ignore
             

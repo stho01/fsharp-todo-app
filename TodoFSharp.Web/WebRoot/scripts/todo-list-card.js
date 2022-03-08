@@ -119,7 +119,7 @@ export default class TodoListCard {
                 await this._httpClient.completeTodo(this.listName, event.target.id);
                 this._moveTodoTo(event.target, this._completedList);
             } else {
-                await this._httpClient.uncompleteTodo(this.listName, event.target.id);
+                await this._httpClient.incompleteTodo(this.listName, event.target.id);
                 this._moveTodoTo(event.target, this._todoList);
             }
         }

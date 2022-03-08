@@ -104,6 +104,8 @@ module Todo =
         |> Ok
     
     let withId id = fun todo -> todo.Id = id
+    
+    let createdDate todo = todo.CreatedDate
         
         
 module TodoList =

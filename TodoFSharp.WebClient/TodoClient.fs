@@ -17,4 +17,4 @@ let addTodoToList name todo = POSTJson<TodoListDto> client $"/list/{name}/todo" 
 let removeTodoFromList name id = DELETE<TodoListDto> client $"/list/{name}/todo/{id}"
 let updateTodo name todo = PUTJson<TodoListDto> client $"/list/{name}/todo" todo
 let completeTodo name id = POST<TodoListDto> client $"/list/{name}/todo/{id}/complete"
-let uncompleteTodo name id = POST<TodoListDto> client $"/list/{name}/todo/{id}/uncomplete"
+let incompleteTodo name id = POST<TodoListDto> client $"/list/{name}/todo/{id}/incomplete"
