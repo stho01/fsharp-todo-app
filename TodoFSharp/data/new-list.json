@@ -2,10 +2,10 @@
   "Name": "new-list",
   "Todos": [
     {
-      "Id": "2982857e-cd4a-438a-89e2-182f5c985946",
-      "Todo": "test",
+      "Id": "3a30973a-e6ee-4c1e-8c8e-34f7082539f5",
+      "Todo": "Test 2",
       "Done": false,
-      "CreatedDate": "2022-03-07T22:31:22.6070015+01:00"
+      "CreatedDate": "2022-03-08T10:20:53.2778228+01:00"
     }
   ]
 }
