@@ -45,7 +45,7 @@ export default class TodoListCard {
         this._options = {...DEFAULT_OPTIONS, ...options};
         this._completedList = null;
         this._todoList = null;
-        this._httpClient = TodoAppHttpClient.create();
+        this._httpClient = new TodoAppHttpClient();
     }
 
     init() {
@@ -112,11 +112,14 @@ export default class TodoListCard {
     
     // EVENT HANDLERS ==========================================================
 
-    _onChangeEventHandler(event) {
+    async _onChangeEventHandler(event) {
         if (event.target instanceof HTMLInputElement && event.target.type === "checkbox") {
+            
             if (event.target.checked) {
+                await this._httpClient.completeTodo(this.listName, event.target.id);
                 this._moveTodoTo(event.target, this._completedList);
             } else {
+                await this._httpClient.uncompleteTodo(this.listName, event.target.id);
                 this._moveTodoTo(event.target, this._todoList);
             }
         }

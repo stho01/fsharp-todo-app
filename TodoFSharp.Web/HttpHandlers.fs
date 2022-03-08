@@ -64,3 +64,25 @@ let removeTodoFromList (name: string, id: string) : HttpHandler =
             
             return! next ctx
         }
+        
+let completeTodo (name: string, id: string): HttpHandler =
+    fun next ctx ->
+        task {
+            
+            TodoClient.completeTodo name id
+            |> Async.RunSynchronously
+            |> ignore
+            
+            return! next ctx
+        }
+        
+let uncompleteTodo (name: string, id: string): HttpHandler =
+    fun next ctx ->
+        task {
+            
+            TodoClient.uncompleteTodo name id
+            |> Async.RunSynchronously
+            |> ignore
+            
+            return! next ctx
+        }

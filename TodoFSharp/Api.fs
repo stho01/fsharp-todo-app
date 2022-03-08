@@ -190,3 +190,52 @@ let updateTodoRequestHandler =
             match workflow domain with
             | Ok result -> Results.Ok (result |> TodoListDto.toDto)
             | Error err -> Results.BadRequest err)
+    
+let updateTodoState isDone =
+    
+    let validateName (name, id) =
+        TodoListName.create name
+        |> Result.map (fun name -> (name, id))
+        
+    let validateId (name, id) =
+        TodoId.create id
+        |> Result.map (fun id -> (name, id))
+    
+    let validate (name, id) =
+        Ok (name, id)
+        |> Result.bind validateName
+        |> Result.bind validateId
+    
+    Func<ILoggerFactory, string, Guid, IResult>(
+        fun loggerFactory name id ->
+            let logger = loggerFactory.CreateLogger "updateTodoState"
+            let fetchTodoList = fetchTodoList logger
+            
+            let updateWorkflow =
+                Implementation.updateTodo
+                    fetchTodoList
+                    saveTodoList
+                    name
+                    
+            let getTodoWorkflow =
+                Implementation.getTodo
+                    fetchTodoList
+            
+            match validate (name, id) with
+            | Ok (name, id) -> 
+                match getTodoWorkflow name id with
+                | (Some _, Some todo) ->
+                    let updated =
+                        {todo with Done = isDone}
+                        |> updateWorkflow
+                        
+                    match updated with
+                    | Ok list -> Results.Ok (list |> TodoListDto.toDto)
+                    | Error err ->
+                        logger.LogError($"Failed to update todo {err}")
+                        Results.StatusCode 500
+                        
+                | (Some _, None) -> Results.NotFound $"No todo entry with id {id} was found in todo list {name}" 
+                | _ -> Results.NotFound "Did no"
+            | Error err -> Results.BadRequest err
+        )

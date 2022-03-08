@@ -24,6 +24,8 @@ let main args =
     app.MapGet("/list/{name}", Api.getTodoListRequestHandler) |> ignore
     app.MapPost("/list/{name}", Api.newTodoListRequestHandler) |> ignore
     app.MapPost("/list/{name}/todo", Api.addTodoToListRequestHandler) |> ignore
+    app.MapPost("/list/{name}/todo/{id}/complete", Api.updateTodoState true) |> ignore
+    app.MapPost("/list/{name}/todo/{id}/uncomplete", Api.updateTodoState false) |> ignore
     app.MapDelete("/list/{name}/todo/{id}", Api.removeTodoFromListRequestHandler) |> ignore
     app.MapPut("/list/{name}/todo", Api.updateTodoRequestHandler) |> ignore
     
