@@ -1,5 +1,6 @@
 ﻿module TodoFSharp.Implementation
 
+open TodoFSharp
 open TodoFSharp.Domain
 
 let internal allTodoExcept todo =
@@ -8,24 +9,29 @@ let internal allTodoExcept todo =
         then Some item
         else None
 
+let getTodoList
+    fetchTodoList
+    : GetList =
+    fun name -> fetchTodoList name
+
 let createTodoList
-    checkExistence
+    fetchTodoList
     saveTodoList
     : CreateList =
         
-    let todoList listName =
-        match checkExistence listName with
-        | (true, list) -> list
-        | (false, _) ->
+    let doCreateList listName =
+        match getTodoList fetchTodoList listName with
+        | Some list -> list
+        | None ->
             listName
             |> TodoList.create
             |> saveTodoList
         
     fun name ->
-        let validatedName = TodoListName.create name
+        
         match TodoListName.create name with
-        | Ok listName -> todoList listName |> Ok
-        | Error err -> DomainError.GenericError err |> Error
+        | Ok listName -> doCreateList listName |> Ok
+        | Error err -> DomainError.FailedToCreateList err |> Error
 
 let addTodoToList
     saveTodoList
@@ -48,11 +54,6 @@ let removeTodoFromList
         { todoList with Todos = updatedList }
         |> saveTodoList
         
-
-let getTodoList
-    fetchTodoList
-    : GetList =
-    fun name -> fetchTodoList name
     
 let getTodo
     fetchTodoList
@@ -99,6 +100,11 @@ let updateTodo
         match todo with
         | Some todo -> doUpdate list todo
         | None -> Error "Failed to update todo. Todo entry was not found..."
+    
+    let fetchTodoList name =
+        match (fetchTodoList name) with
+        | Some list -> Ok list
+        | None -> Error "Failed to fetch todo list"
     
     fun todo ->
         todoListName

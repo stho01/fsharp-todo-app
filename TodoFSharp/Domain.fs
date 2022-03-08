@@ -26,6 +26,7 @@ type DomainError =
     | TodoDoesNotExist of string
     | GenericError of string
     | FailedToUpdateTodo of string
+    | FailedToCreateList of string
 
 type CreateList = string -> Result<TodoList, DomainError>
 

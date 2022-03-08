@@ -3,6 +3,7 @@
 open System
 open System.IO
 open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.Logging
 open Microsoft.FSharp.Core
 open TodoFSharp.Domain
 open TodoFSharp.Dto
@@ -26,13 +27,16 @@ let private saveTodoList (list: TodoList) =
     
     list
 
-let private fetchTodoList (name: TodoListName): Result<TodoList, string> =
-    name
-    |> TodoListName.value
-    |> sprintf "data/%s.json"
-    |> Utils.readAllText 
-    |> Result.bind Utils.deserialize<TodoListDto>
-    |> Result.map TodoListDto.toDomain
+let private fetchTodoList
+    (logger: ILogger)
+    (name: TodoListName) =
+        
+        name
+        |> TodoListName.value
+        |> sprintf "data/%s.json"
+        |> (Utils.readAllTextOption logger) 
+        |> Option.bind Utils.deserializeOption<TodoListDto>
+        |> Option.map TodoListDto.toDomain
     
 let private fetchTodoLists logger page take =
     let files =
@@ -74,111 +78,110 @@ let private fetchTodoLists logger page take =
 
 
 let getTodoListsRequestHandler =
-    Func<Nullable<int>, Nullable<int>, IResult>(fun (page: Nullable<int>) (take: Nullable<int>) ->
-        match (page.HasValue, take.HasValue) with
-        | (true, true) -> Results.Ok (fetchTodoLists page.Value (Some take.Value))
-        | (true, false) -> Results.Ok (fetchTodoLists page.Value None)
-        | _ -> Results.Ok (fetchTodoLists 0 None) )
-    
+    Func<ILoggerFactory, Nullable<int>, Nullable<int>, IResult>(
+        fun ([<FromServices>] loggerFactory: ILoggerFactory) (page: Nullable<int>) (take: Nullable<int>) ->
+            let logger = loggerFactory.CreateLogger "GetTodoListRequest"
+            let page = page.GetValueOrDefault 0
+            let take = take.GetValueOrDefault 5 |> Some
+            
+            Results.Ok (fetchTodoLists logger page take)
+        )
     
 let getTodoListRequestHandler =
-    let workflow =
-        Implementation.getTodoList fetchTodoList
+    Func<ILoggerFactory, string, IResult>(
+        fun loggerFactory name ->
+            let logger = loggerFactory.CreateLogger "getTodoListRequestHandler"
+            let workflow =
+                Implementation.getTodoList (fetchTodoList logger)
 
-    let validate name =
-        Ok name
-        |> Result.bind TodoListName.create
-        |> Result.bind workflow 
-    
-    Func<string, IResult>(
-        fun name ->
+            let validate name =
+                Ok name
+                |> Result.bind TodoListName.create
+            
             match validate name with
-            | Ok todoList -> Results.Ok (todoList |> TodoListDto.toDto) 
+            | Ok listName ->
+                match workflow listName with
+                | Some todoList -> Results.Ok (todoList |> TodoListDto.toDto)
+                | None -> Results.NotFound $"List with name {TodoListName.value listName} was not found"
             | Error error -> Results.BadRequest error)
 
 let newTodoListRequestHandler =
-    let workflow =
-        Implementation.createTodoList
-            listExists
-            saveTodoList
+    Func<ILoggerFactory, string, IResult>(
+        fun loggerFactory name ->
+            let logger = loggerFactory.CreateLogger "newTodoListRequestHandler"
+    
+            let workflow =
+                Implementation.createTodoList
+                    (fetchTodoList logger) 
+                    saveTodoList
 
-    Func<string, IResult>(
-        fun name ->
             match workflow name with
             | Ok todoList -> Results.Ok (todoList |> TodoListDto.toDto)
             | Error error -> Results.BadRequest error)
 
 let addTodoToListRequestHandler =
-    let addTodoToList = Implementation.addTodoToList saveTodoList
-    let getTodoList = Implementation.getTodoList fetchTodoList
     let validateListName (name, todo) = (TodoListName.create name) |> Result.map (fun name -> (name, todo))
     let validateTodo (name, todo) = Todo.create todo.Todo |> Result.map (fun todo -> (name, todo))
-    let validateToDoList (name, todo) = getTodoList name |> Result.map (fun list -> (list, todo)) 
 
     let validate (name, todo) =
         Ok (name, todo)
         |> Result.bind validateListName
         |> Result.bind validateTodo
-        |> Result.bind validateToDoList
     
-    Func<string, TodoDto, IResult>(
-        fun name todo ->
+    Func<ILoggerFactory, string, TodoDto, IResult>(
+        fun loggerFactory name todo ->
+            let logger = loggerFactory.CreateLogger "addTodoToListRequestHandler"
+            let addTodoToList = Implementation.addTodoToList saveTodoList
+            let getTodoList = Implementation.getTodoList (fetchTodoList logger)
+            
             match validate (name, todo) with
-            | Ok (list, todo) ->
-                let updateList =
-                    addTodoToList list todo
-                    |> TodoListDto.toDto
-                    
-                Results.Ok(updateList)
+            | Ok (name, todo) ->
+                match getTodoList name with
+                | Some list -> Results.Ok (addTodoToList list todo |> TodoListDto.toDto)
+                | None -> Results.NotFound $"Todo list with name {TodoListName.value name} not found"
             | Error err -> Results.BadRequest err)
 
 let removeTodoFromListRequestHandler =
-    let removeTodoFromListWorkflow = Implementation.removeTodoFromList saveTodoList
-    let getTodo = Implementation.getTodo fetchTodoList
-    let getTodoList = Implementation.getTodoList fetchTodoList
     let validateName (name, id) =
         TodoListName.create name |> Result.map (fun name -> (name, id))
     let validateId (name, id) =
         TodoId.create id |> Result.map (fun id -> (name, id))
-//    let validateTodoExistence (name, id) =
-//        getTodo name id
-        
+
     let validate (name, id) =
         Ok (name, id)
         |> Result.bind validateName
         |> Result.bind validateId
     
-    Func<string, Guid, IResult>(
-        fun name id ->
+    Func<ILoggerFactory, string, Guid, IResult>(
+        fun loggerFactory name id ->
+            let logger = loggerFactory.CreateLogger "removeTodoFromListRequestHandler"
+            let removeTodoFromListWorkflow = Implementation.removeTodoFromList saveTodoList
+            let getTodo = Implementation.getTodo (fetchTodoList logger)
+            let getTodoList = Implementation.getTodoList (fetchTodoList logger)        
+            
             match validate (name, id) with
             | Ok (name, id) ->
                 
                 match getTodo name id with
-                | Ok (list, todo) ->
-                    let result = removeTodoFromListWorkflow list todo |> TodoListDto.toDto
-                    Results.Ok result
-                | Error err ->
-                    match err with
-                    | DomainError.TodoDoesNotExist(s) ->
-                        match getTodoList name with
-                        | Ok list -> Results.Ok list
-                        | Error err ->  Results.BadRequest err
-                    | _ -> Results.BadRequest err
-                    
-                
-//                let updatedList =
-//                    (removeTodoFromListWorkflow list todo)
-//                    |> TodoListDto.toDto
-//                    
-//                Results.Ok updatedList  
+                | (list, todo) ->
+                    match (list, todo) with
+                    | (Some list, Some todo) ->
+                        let result = removeTodoFromListWorkflow list todo |> TodoListDto.toDto
+                        Results.Ok result
+                    | (Some _, None) ->
+                        Results.NotFound $"Todo with id {id} not found"
+                    | _ ->
+                        Results.NotFound $"TodoList with name {TodoListName.value name} not found"
+                        
             | Error err -> Results.BadRequest err)
 
 let updateTodoRequestHandler =
-    Func<string, TodoDto, IResult>(
-        fun name todo ->
+    Func<ILoggerFactory, string, TodoDto, IResult>(
+        fun loggerFactory name todo ->
+            let logger = loggerFactory.CreateLogger "updateTodoRequestHandler"
             let workflow =
                 Implementation.updateTodo
-                    fetchTodoList
+                    (fetchTodoList logger)
                     saveTodoList
                     name
             
