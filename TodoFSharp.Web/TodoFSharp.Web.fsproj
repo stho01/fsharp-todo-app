@@ -16,7 +16,9 @@
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="ViewModels.fs" />
-    <Compile Include="Views.fs" />
+    <Compile Include="Views\Views.Shared.fs" />
+    <Compile Include="Views\Views.FrontPage.fs" />
+    <Compile Include="Views\Views.TodoListPage.fs" />
     <Compile Include="Dto.fs" />
     <Compile Include="HttpHandlers.fs" />
     <Compile Include="Program.fs" />
@@ -32,4 +34,5 @@
   <ItemGroup>
     <ProjectReference Include="..\TodoFSharp.WebClient\TodoFSharp.WebClient.fsproj" />
   </ItemGroup>
+
 </Project>
