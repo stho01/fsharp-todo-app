@@ -51,3 +51,8 @@ module Shared =
             ]
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__completed"] ] completed
         ]
+        
+    let createTodoListCard classes =
+        div [ _classList [bs.Card; bs.Mb5] ] [
+            h4 [] [ str "Skriv et notat " ]
+        ]

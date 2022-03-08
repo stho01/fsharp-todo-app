@@ -24,6 +24,7 @@ module FrontPage =
     let view (model: FrontPage) = 
         [
             div [ _class bs.Container ] [
+                Shared.createTodoListCard
                 todoDetailsList model.TodoLists.Payload
             ]
         ] |> Layout.view

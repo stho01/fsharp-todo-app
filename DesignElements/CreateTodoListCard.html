@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="style/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="pt-5">
+
+<div class="container">
+  <div class="card create-todo-list-card shadow-sm" id="createTodoListCard">
+    <h5 class="mb-0 visually-hidden">Skriv et notat...</h5>
+
+    <form class="">
+      <input type="text" class="px-2 form-control-plaintext" placeholder="Tittel">
+      <input type="text" class="px-2 form-control-plaintext" placeholder="Skriv et notat...">
+    </form>
+
+  </div>
+</div>
+
+
+<script src="style/bootstrap/dist/js/bootstrap.js"></script>
+<script type="module">
+
+  class CreateTodoList {
+    _container;
+
+    constructor(container) {
+      this._container = container;
+    }
+
+    init() {
+
+    }
+  }
+
+  const instance = new CreateTodoList(document.getElementById("createTodoListCard"))
+  instance.init();
+
+</script>
+</body>
+</html>
