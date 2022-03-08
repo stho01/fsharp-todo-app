@@ -12,87 +12,62 @@ let private client =
     client.BaseAddress <- uri
     client
 
-let internal getAllTodoListsUrl = "/"
-let internal getTodoListRequest name = $"/list/{name}"
-let internal addTodoToListUrl name = $"/list/{name}/todo"
-let internal removeTodoFromListUrl name id = $"/list/{name}/todo/{id}"
-let internal updateTodoUrl name = $"/list/{name}/todo"
-let internal completeTodoUrl name id = $"/list/{name}/todo/{id}/complete"
-let internal uncompleteTodoUrl name id = $"/list/{name}/todo/{id}/uncomplete"
+let internal getAllTodoListsRequest () = GET client "/"
+let internal getTodoListRequest name = GET client $"/list/{name}"
+let internal addTodoToListRequest name = POSTJson client $"/list/{name}/todo"
+let internal removeTodoFromListRequest name id = DELETE client $"/list/{name}/todo/{id}"
+let internal updateTodoUrl name = PUTJson client $"/list/{name}/todo"
+let internal completeTodoRequest name id = POST client $"/list/{name}/todo/{id}/complete"
+let internal uncompleteTodoRequest name id = POST client $"/list/{name}/todo/{id}/uncomplete"
 
 
 let getTodoLists () =
     async {
-        let! response = client.GetAsync(getAllTodoListsUrl) |> Async.AwaitTask
-        let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
+        let! response = getAllTodoListsRequest ()
         
-        let result = Utils.deserialize<PagedDataDto<TodoListDto>> content 
-        
-        return result
+        return Utils.deserialize<PagedDataDto<TodoListDto>> response 
     }
     
 let getTodoList name =
     async {
-        let url = getTodoListRequest name
-        let! response = client.GetAsync(url) |> Async.AwaitTask
-        let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
+        let! response = getTodoListRequest name
         
-        let result = Utils.deserialize<TodoListDto> content 
+        let result = Utils.deserialize<TodoListDto> response 
         
         return result
     }
     
 let addTodoToList (name: string) (todo: TodoDto) =
     async {
-        let url = addTodoToListUrl name
-        let! responseBody = POSTJson client url todo
-        return Utils.deserialize<TodoListDto> responseBody
+        let! response = addTodoToListRequest name todo
+        
+        return Utils.deserialize<TodoListDto> response
     }
     
 let removeTodoFromList (name: string) (id: Guid) =
     async {
-        let url = removeTodoFromListUrl name id
+        let! response = removeTodoFromListRequest name id
         
-        let! response =
-            client.DeleteAsync(url)
-            |> Async.AwaitTask
-            
-        let! responseBody =
-            response.Content.ReadAsStringAsync()
-            |> Async.AwaitTask
-        
-        return Utils.deserialize<TodoListDto> responseBody
+        return Utils.deserialize<TodoListDto> response
     }
     
 let updateTodo (name: string) (todo: TodoDto) =
     async {
-        let url = updateTodoUrl name
-        let json = Utils.serialize todo
-        
-        let requestBody = new StringContent(
-            json,
-            Encoding.UTF8,
-            "application/json");
-        
-        let! response = client.PutAsync(url, requestBody) |> Async.AwaitTask
-        
-        let! responseBody =
-            response.Content.ReadAsStringAsync()
-            |> Async.AwaitTask
+        let! response = updateTodoUrl name todo
             
-        return Utils.deserialize<TodoListDto> responseBody
+        return Utils.deserialize<TodoListDto> response
     }
     
 let completeTodo (listName: string) (id: string) =
     async {
-        let url = completeTodoUrl listName id
-        let! result = POST client url
-        return Utils.deserialize<TodoListDto> result
+        let! response = completeTodoRequest listName id
+        
+        return Utils.deserialize<TodoListDto> response
     }
     
 let uncompleteTodo (listName: string) (id: string) =
     async {
-        let url = uncompleteTodoUrl listName id
-        let! result = POST client url
-        return Utils.deserialize<TodoListDto> result
+        let! response = uncompleteTodoRequest listName id
+        
+        return Utils.deserialize<TodoListDto> response
     }

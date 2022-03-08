@@ -2,9 +2,9 @@
   "Name": "marius_2",
   "Todos": [
     {
-      "Id": "e3419ebf-a464-462b-a075-46fd82cdb17c",
+      "Id": "e3419ebf-a464-462b-a075-46fd82cdb17d",
       "Todo": "Remember to delete this todo too 2",
-      "Done": true,
+      "Done": false,
       "CreatedDate": "2022-03-03T11:16:47.4066271+01:00"
     }
   ]
