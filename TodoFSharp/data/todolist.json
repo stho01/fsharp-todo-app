@@ -4,7 +4,7 @@
     {
       "Id": "36960680-3b96-45c9-8977-4c9700550498",
       "Todo": "Create a todo app using F#",
-      "Done": true,
+      "Done": false,
       "CreatedDate": "2022-03-02T10:00:00+01:00"
     },
     {
