@@ -1,7 +1,6 @@
 ﻿module TodoFSharp.Web.HttpHandlers
 
 open System
-open System.Net
 open Microsoft.AspNetCore.Http
 open TodoFSharp.Web.Dto
 open TodoFSharp.Web.ViewModels

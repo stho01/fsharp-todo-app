@@ -2,16 +2,16 @@
   "Name": "new-list",
   "Todos": [
     {
-      "Id": "27de2aab-e277-4e65-b311-6e394fe12a89",
-      "Todo": "Husk \u00E5 ta oppvaska",
-      "Done": false,
-      "CreatedDate": "2022-03-08T13:11:01.6407551+01:00"
-    },
-    {
       "Id": "7be24ac2-b4a4-4a4b-8833-2e6580430b1a",
       "Todo": "Husk \u00E5 ta s\u00F8pla",
-      "Done": true,
+      "Done": false,
       "CreatedDate": "2022-03-08T11:48:52.1192+01:00"
+    },
+    {
+      "Id": "27de2aab-e277-4e65-b311-6e394fe12a89",
+      "Todo": "Husk \u00E5 ta oppvaska",
+      "Done": true,
+      "CreatedDate": "2022-03-08T13:11:01.6407551+01:00"
     }
   ]
 }

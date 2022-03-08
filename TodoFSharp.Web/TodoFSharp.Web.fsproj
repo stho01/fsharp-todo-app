@@ -17,6 +17,7 @@
     <Compile Include="Utils.fs" />
     <Compile Include="ViewModels.fs" />
     <Compile Include="Views\Views.Shared.fs" />
+    <Compile Include="Views\Views.Layout.fs" />
     <Compile Include="Views\Views.FrontPage.fs" />
     <Compile Include="Views\Views.TodoListPage.fs" />
     <Compile Include="Dto.fs" />

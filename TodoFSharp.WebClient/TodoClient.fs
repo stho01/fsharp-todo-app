@@ -6,7 +6,6 @@ open System.Text
 open TodoFSharp.WebClient.Dto
 open TodoFSharp.WebClient.HttpMethods
 
-
 let private client =
     let client = new HttpClient()
     let uri = "https://localhost:7157" |> Uri
