@@ -10,7 +10,7 @@ open TodoFSharp.WebClient.Serialization
 *)
 
 
-let CreateGetRequest<'TResponse>
+let createGetRequest<'TResponse>
     (client: HttpClient)
     (deserializer: Deserializer<'TResponse>)
     : HttpGet<'TResponse> =
@@ -21,7 +21,7 @@ let CreateGetRequest<'TResponse>
                 return deserializer content
             }
 
-let CreatePostRequest
+let createPostRequest
     (client: HttpClient)
     (serializer: Serializer<'TPayload>)
     (deserializer: Deserializer<'TResponse>)
@@ -40,7 +40,7 @@ let CreatePostRequest
             }
 
 
-let CreateDeleteRequest
+let createDeleteRequest
     (client: HttpClient)
     (deserializer: Deserializer<'TResponse>)
     : HttpDelete<'TResponse> =
@@ -53,7 +53,7 @@ let CreateDeleteRequest
             }
 
 
-let CreatePutRequest
+let createPutRequest
     (client: HttpClient)
     (serializer: Serializer<'TPayload>)
     (deserializer: Deserializer<'TResponse>)
