@@ -9,7 +9,8 @@
         <Compile Include="Serialization.fs" />
         <Compile Include="Json.fs" />
         <Compile Include="Dto.fs" />
-        <Compile Include="HttpMethods.fs" />
+        <Compile Include="HttpMethods.PublicTypes.fs" />
+        <Compile Include="HttpMethods.Implementation.fs" />
         <Compile Include="TodoClient.fs" />
     </ItemGroup>
 

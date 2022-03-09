@@ -3,27 +3,48 @@
 open System
 open System.Net.Http
 open TodoFSharp.WebClient.Dto
-open TodoFSharp.WebClient.HttpMethods
 open TodoFSharp.WebClient
-
-let responseOf<'TType> = typedefof<'TType> |> Some
 
 let private client =
     let client = new HttpClient()
     let uri = "https://localhost:7157" |> Uri
     client.BaseAddress <- uri
     client
+    
+module Queries =
+    let getTodoLists () =
+        let GET = HttpMethods.CreateGetRequest client Json.strictDeserializer<PagedDataDto<TodoListDto>> 
+        
+        GET "/"
 
+    let getTodoList name =
+        let GET = HttpMethods.CreateGetRequest client Json.strictDeserializer<TodoListDto>
+        
+        GET $"/list/{name}"
 
-let internal GET url deserializer = GET client deserializer url  
-let internal POST url body responseType = POST client url Json.serializeToContent body Json.deserializer<TodoListDto> 
+module Commands =
 
+    let addTodoToList name todo =
+        let POST = HttpMethods.CreatePostRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
+        
+        POST $"/list/{name}/todo" (Some todo)
+        
+    let removeTodoFromList name id =
+        let DELETE = HttpMethods.CreateDeleteRequest client Json.strictDeserializer<TodoListDto>
+        
+        DELETE $"/list/{name}/todo/{id}"
 
-let getTodoLists () = GET "/" Json.deserialize<PagedDataDto<TodoListDto>>
-let getTodoList name = GET $"/list/{name}" Json.deserialize<TodoListDto>
+    let updateTodo name todo =
+        let PUT = HttpMethods.CreatePutRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
+        
+        PUT $"/list/{name}/todo" (Some todo)
 
-let addTodoToList name todo = POST $"/list/{name}/todo" (Some todo) responseOf<TodoListDto>
-let removeTodoFromList name id = DELETE<TodoListDto> client $"/list/{name}/todo/{id}"
-let updateTodo name todo = PUTJson<TodoListDto> client $"/list/{name}/todo" todo
-let completeTodo name id = POST<TodoListDto> client $"/list/{name}/todo/{id}/complete"
-let incompleteTodo name id = POST<TodoListDto> client $"/list/{name}/todo/{id}/incomplete"
+    let completeTodo name id =
+        let POST = HttpMethods.CreatePostRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
+        
+        POST $"/list/{name}/todo/{id}/complete" None
+
+    let incompleteTodo name id =
+        let POST = HttpMethods.CreatePostRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
+        
+        POST $"/list/{name}/todo/{id}/incomplete" None

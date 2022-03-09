@@ -12,7 +12,7 @@ open TodoFSharp.WebClient.Dto
 let indexHandler : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
         let pageResult =
-            TodoClient.getTodoLists ()
+            TodoClient.Queries.getTodoLists ()
             |> Async.RunSynchronously
             |> (PagedResultDto.toViewModel TodoListDto.toViewModel)
         
@@ -23,7 +23,7 @@ let indexHandler : HttpHandler =
 let todoListHandler name : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
         let list =
-            TodoClient.getTodoList name
+            TodoClient.Queries.getTodoList name
             |> Async.RunSynchronously
             |> TodoListDto.toViewModel
         
@@ -43,7 +43,7 @@ let addTodoToListHandler name : HttpHandler =
                 CreatedDate = None
             }
             
-            TodoClient.addTodoToList name newTodo
+            TodoClient.Commands.addTodoToList name newTodo
             |> Async.RunSynchronously
             |> ignore
                 
@@ -57,7 +57,7 @@ let removeTodoFromList (name: string, id: string) : HttpHandler =
         task {
             let guid = id |> Guid.Parse
             
-            TodoClient.removeTodoFromList name guid
+            TodoClient.Commands.removeTodoFromList name guid
             |> Async.RunSynchronously
             |> ignore
             
@@ -68,7 +68,7 @@ let completeTodo (name: string, id: string): HttpHandler =
     fun next ctx ->
         task {
             
-            TodoClient.completeTodo name id
+            TodoClient.Commands.completeTodo name id
             |> Async.RunSynchronously
             |> ignore
             
@@ -79,7 +79,7 @@ let incompleteTodo (name: string, id: string): HttpHandler =
     fun next ctx ->
         task {
             
-            TodoClient.incompleteTodo name id
+            TodoClient.Commands.incompleteTodo name id
             |> Async.RunSynchronously
             |> ignore
             

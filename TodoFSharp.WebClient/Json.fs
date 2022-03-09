@@ -3,6 +3,7 @@
 open System.Net.Http
 open System.Text
 open System.Text.Json
+open TodoFSharp.WebClient.Serialization
 
 let private serializeOptions =
     let options = JsonSerializerOptions()
@@ -12,10 +13,14 @@ let private serializeOptions =
 
 // Deserialization
 
-let deserializer<'TResponse> : Serialization.Deserializer<'TResponse> =
-    fun json -> JsonSerializer.Deserialize<'TResponse>(json, serializeOptions)
-let deserialize<'TResponse> (json: string) = deserializer<'TResponse> json
+let anonymousDeserializer : Deserializer =
+    fun returnType json -> JsonSerializer.Deserialize(json, returnType, serializeOptions)
 
+let strictDeserializer<'TResponse> : Deserializer<'TResponse> =
+    fun json -> JsonSerializer.Deserialize<'TResponse>(json, serializeOptions)
+
+let rec deserialize<'TResponse> (json: string) =
+    strictDeserializer<'TResponse> json
 
 // Serialization
 

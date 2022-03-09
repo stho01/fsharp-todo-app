@@ -29,3 +29,7 @@ type PagedDataDto<'TItem> = {
     Total: int
     Payload: 'TItem list 
 }
+
+
+module PagedDataDto =
+    let create a = a
