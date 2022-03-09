@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Utils.fs" />
+        <Compile Include="Serialization.fs" />
+        <Compile Include="Json.fs" />
         <Compile Include="Dto.fs" />
         <Compile Include="HttpMethods.fs" />
         <Compile Include="TodoClient.fs" />

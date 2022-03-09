@@ -4,6 +4,9 @@ open System
 open System.Net.Http
 open TodoFSharp.WebClient.Dto
 open TodoFSharp.WebClient.HttpMethods
+open TodoFSharp.WebClient
+
+let responseOf<'TType> = typedefof<'TType> |> Some
 
 let private client =
     let client = new HttpClient()
@@ -11,9 +14,15 @@ let private client =
     client.BaseAddress <- uri
     client
 
-let getTodoLists () = GET<PagedDataDto<TodoListDto>> client "/"
-let getTodoList name = GET<TodoListDto> client $"/list/{name}"
-let addTodoToList name todo = POSTJson<TodoListDto> client $"/list/{name}/todo" todo
+
+let internal GET url deserializer = GET client deserializer url  
+let internal POST url body responseType = POST client url Json.serializeToContent body Json.deserializer<TodoListDto> 
+
+
+let getTodoLists () = GET "/" Json.deserialize<PagedDataDto<TodoListDto>>
+let getTodoList name = GET $"/list/{name}" Json.deserialize<TodoListDto>
+
+let addTodoToList name todo = POST $"/list/{name}/todo" (Some todo) responseOf<TodoListDto>
 let removeTodoFromList name id = DELETE<TodoListDto> client $"/list/{name}/todo/{id}"
 let updateTodo name todo = PUTJson<TodoListDto> client $"/list/{name}/todo" todo
 let completeTodo name id = POST<TodoListDto> client $"/list/{name}/todo/{id}/complete"
