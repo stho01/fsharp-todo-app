@@ -3,19 +3,14 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "bootstrap@5.1",
-      "destination": "style/bootstrap/",
-      "files": [
-        "dist/css/bootstrap.css",
-        "dist/js/bootstrap.js"
-      ]
+      "library": "jquery@3.6.0",
+      "destination": "scripts\\jquery",
+      "files": ["dist/*"]
     },
     {
-      "library": "vue@3.2.31",
-      "destination": "scripts\\vue",
-      "files": [
-        "dist/*"
-      ]
+      "library": "bootstrap@5.1.3",
+      "destination": "style\\bootstrap",
+      "files": ["dist/**/*"]
     }
   ]
 }

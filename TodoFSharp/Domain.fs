@@ -34,7 +34,7 @@ type AddTodoToList =
     TodoList
      -> Todo
      -> TodoList
-     
+
 type RemoveTodoFromList =
     TodoList
      -> Todo

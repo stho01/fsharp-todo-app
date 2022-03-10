@@ -12,8 +12,36 @@ module Shared =
     
     let spacer = div [ _class bs.FlexGrow1 ] [] 
     
-    let todoListCard (model: TodoList) =
+    let dropdown items =
+        let dropdownItem item = li [ _class bs.DropdownItem ] [ item ]
+        let toDropdownItems items = items |> List.map dropdownItem
         
+        div [ _class bs.Dropdown ] [
+            button [
+                _classList [
+                    bs.Btn
+                    css.BtnIcon
+                    bs.BtnSm
+                ]
+                _type "button"
+                _data "bs-toggle" "dropdown"
+            ] [
+                i [
+                    _classList [
+                        fa.Fa
+                        fa.FaChevronDown
+                    ]
+                ] []
+            ]
+            ul [
+                _classList [
+                    bs.DropdownMenu
+                    bs.DropdownMenuEnd
+                ]
+            ] (toDropdownItems items)
+        ]
+    
+    let todoListCard (model: TodoList) =
         // list items 
         let listItem (isDone: bool) (index: int) (model: Todo) =
             li [ _classList [ bs.ListGroupItem; bs.DFlex; bs.AlignItemsCenter ] ] [
@@ -41,12 +69,17 @@ module Shared =
         div [ _classList [bs.Card; "todo-list-card"; bs.Mb2] ] [
             input [ _class "todo-list-card__name"; _type "hidden"; _value model.Name ]
             div [ _class bs.CardHeader ] [
-                 h5 [ ] [ encodedText model.Name ]
+                 h5 [ _class bs.M0 ] [ encodedText model.Name ]
+                 dropdown [
+                     form [ _action $"list/{model.Name}/delete" ] [
+                         button [] []
+                     ]
+                 ]
             ]
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__todos"] ] todoLists
             div [ _classList [bs.Px3; bs.Py1; bs.DFlex; bs.AlignItemsCenter] ] [
                 i [ _classList [bs.TextMuted; fa.Fa; fa.FaPlus; bs.Me3 ] ] []
-                input [ _type "text"; _classList [bs.FormControlPlaintext; bs.Px2; bs.FormControlSm; bs.W100; "todo-list-card__new"]; _placeholder "Listeelement"]
+                input [ _type "text"; _classList [bs.FormControlPlaintext; bs.Px2; bs.FormControlSm; bs.W100; "todo-list-card__new"]; _placeholder "todo..."]
                 
             ]
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__completed"] ] completed
@@ -69,7 +102,7 @@ module Shared =
                             bs.Rounded0
                             bs.RoundedStart
                         ]
-                        _placeholder "Lag en todoliste..."
+                        _placeholder "Lag en To-Do liste..."
                     ]
                     button [
                         _classList [
