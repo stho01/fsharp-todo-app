@@ -52,7 +52,34 @@ module Shared =
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__completed"] ] completed
         ]
         
-    let createTodoListCard =
-        div [ _classList [bs.Card; bs.Mb5] ] [
-            h4 [] [ str "Skriv et notat " ]
+    let createTodoListCard classes =
+        div [ _classList (["create-todo-list"; bs.Card; bs.ShadowSm] @ classes) ] [
+            form [
+                _action ""
+                _method "post"
+            ] [
+                div [ _class bs.DFlex ] [
+                    input [
+                        _type "text"
+                        _classList [
+                            bs.H5
+                            bs.FormControlPlaintext
+                            bs.Px3
+                            bs.Rounded0
+                            bs.RoundedStart
+                        ]
+                        _placeholder "Lag en todoliste..."
+                    ]
+                    button [
+                        _classList [
+                            bs.Btn
+                            bs.BtnPrimary
+                            bs.Rounded0
+                            bs.RoundedEnd
+                        ]
+                    ] [
+                        str "Gå!"
+                    ]
+                ]
+            ]
         ]

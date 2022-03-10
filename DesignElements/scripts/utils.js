@@ -4,3 +4,13 @@ export function uuid() {
         return v.toString(16);
     });
 }
+
+export function getElementOrThrow(selector) {
+    const element = this._container.querySelector(selector);
+
+    if (element == null) {
+        throw new Error(`Element for selector ${selector} was not found within container...`)
+    }
+
+    return element;
+}

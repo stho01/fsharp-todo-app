@@ -14,10 +14,28 @@
     <h5 class="mb-0 visually-hidden">Skriv et notat...</h5>
 
     <form class="">
-      <input type="text" class="px-2 form-control-plaintext" placeholder="Tittel">
-      <input type="text" class="px-2 form-control-plaintext" placeholder="Skriv et notat...">
+      <div class="card todo-list-card">
+        <div class="card-header">
+          <h5 class="m-0"><input type="text" class="px-2 form-control-plaintext" placeholder="Tittel"></h5>
+        </div>
+        <ul class=" list-group list-group-flush todo-list-card__todos">
+          <li class="list-group-item d-flex align-items-center">
+            <input class="form-check-input me-3" type="checkbox" id="check1">
+            <label class="form-check-label" for="check1">Husk å ta oppvasken</label>
+          </li>
+        </ul>
+        <div class="px-3 py-1 d-flex align-items-center">
+          <i class="text-muted fa fa-plus me-3"></i>
+          <input type="text" class="form-control-plaintext px-2 form-control-sm w-100 todo-list-card__new" placeholder="Listelement">
+        </div>
+        <ul class="list-group list-group-flush todo-list-card__completed text-decoration-line-through">
+          <li class="list-group-item">
+            <input class="form-check-input me-3" type="checkbox" id="check5" checked>
+            <label class="form-check-label" for="check5">Husk å ta oppvasken</label>
+          </li>
+        </ul>
+      </div>
     </form>
-
   </div>
 </div>
 

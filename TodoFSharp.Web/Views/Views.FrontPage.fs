@@ -23,8 +23,10 @@ module FrontPage =
     
     let view (model: FrontPage) = 
         [
-            div [ _class bs.Container ] [
-                Shared.createTodoListCard
+            div [ _classList [bs.Container] ] [
+                div [ _classList [bs.DFlex; bs.JustifyContentCenter; bs.M5] ] [
+                    Shared.createTodoListCard []
+                ]
                 todoDetailsList model.TodoLists.Payload
             ]
         ] |> Layout.view

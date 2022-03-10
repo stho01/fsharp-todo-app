@@ -29,3 +29,7 @@
     text-decoration: line-through !important;
 }
 
+.create-todo-list {
+    width: 100%;
+    max-width: 550px;
+}

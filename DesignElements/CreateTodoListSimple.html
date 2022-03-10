@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="style/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body class="pt-5">
+
+<div class="container">
+    <div class="card shadow-sm" style="max-width: 450px">
+        <form action="" method="post">
+            <div class="d-flex">
+                <input type="text" class="h5 form-control-plaintext px-3 rounded-0 rounded-start" placeholder="Lag en todo liste..." />
+                <button class="btn btn-primary rounded-0 rounded-end">Lagre</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="style/bootstrap/dist/js/bootstrap.js"></script>
+<script type="module">
+
+    import {getElementOrThrow} from "./scripts/utils";
+
+    class CreateTodoList {
+        _container;
+        _input;
+        _button;
+
+        constructor(container) {
+            this._container = container;
+        }
+
+        init() {
+            this._input = getElementOrThrow("input[type=text]");
+            this._button = getElementOrThrow("button");
+            this._container.addEventListener("keyup", this._onKeyUpEventHandler.bind(this));
+            this._container.addEventListener("click", this._onClickEventHandler.bind(this));
+        }
+
+        async submit() {
+
+        }
+
+        // EVENT HANDLERS:
+
+        async _onKeyUpEventHandler(event) {
+            const keyCode = event.keyCode;
+            if (event.target === this._input && keyCode === 13) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                await this.submit();
+            }
+        }
+
+        async _onClickEventHandler(event) {
+            if (event.target === this._button) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                await this.submit();
+            }
+        }
+    }
+
+    const instance = new CreateTodoList(document.getElementById("createTodoListCard"))
+    instance.init();
+
+</script>
+</body>
+</html>

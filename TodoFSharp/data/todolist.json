@@ -2,22 +2,28 @@
   "Name": "Todolist",
   "Todos": [
     {
-      "Id": "36960680-3b96-45c9-8977-5c9700550498",
-      "Todo": "Practice F#",
-      "Done": false,
-      "CreatedDate": "2022-01-01T10:00:00+01:00"
-    },
-    {
       "Id": "36960680-3b96-45c9-8977-6c9700550498",
       "Todo": "Remember to take laundry",
       "Done": true,
       "CreatedDate": "2022-01-01T10:00:00+01:00"
     },
     {
+      "Id": "36960680-3b96-45c9-8977-5c9700550498",
+      "Todo": "Practice F#",
+      "Done": true,
+      "CreatedDate": "2022-01-01T10:00:00+01:00"
+    },
+    {
       "Id": "36960680-3b96-45c9-8977-4c9700550498",
       "Todo": "Create a todo app using F#",
-      "Done": false,
+      "Done": true,
       "CreatedDate": "2022-03-02T10:00:00+01:00"
+    },
+    {
+      "Id": "3275f619-ea58-466a-b47e-79312af4e689",
+      "Todo": "TEst",
+      "Done": true,
+      "CreatedDate": "2022-03-10T08:45:56.2077159+01:00"
     }
   ]
 }
