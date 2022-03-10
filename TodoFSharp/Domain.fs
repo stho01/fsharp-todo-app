@@ -61,8 +61,8 @@ module TodoId =
         match box id with
         | :? Guid as id -> id |> TodoId |> Ok
         | :? string as s -> Guid.Parse s |> TodoId |> Ok
-        | _ ->  Error "The TodoId must be a guid"
-        
+        | _ ->  Error "The TodoId must be a guid or a guid formated string"
+    
     let createOption id =
         match box id with
         | :? Guid as id ->
@@ -70,7 +70,12 @@ module TodoId =
         | :? string as s when String.IsNullOrWhiteSpace s = false ->
             Guid.Parse s |> TodoId |> Some
         | _ -> None
-        
+    
+    let createOrGenerate id =
+        match id with
+        | Some id -> create id
+        | None -> newId() |> Ok
+    
     let value (TodoId id) = id
     
     let toString id = (value id).ToString()
@@ -96,12 +101,17 @@ module TodoListName =
     
     
 module Todo =
-    let create todo =
-        { Id = TodoId.newId()
-          Todo = todo
-          Done = false
-          CreatedDate = DateTimeOffset.Now }
-        |> Ok
+     
+    let create todo id =
+        let id = TodoId.createOrGenerate id
+        match id with
+        | Ok id -> 
+            { Id = id
+              Todo = todo
+              Done = false
+              CreatedDate = DateTimeOffset.Now }
+            |> Ok
+        | Error err -> Error err
     
     let withId id = fun todo -> todo.Id = id
     

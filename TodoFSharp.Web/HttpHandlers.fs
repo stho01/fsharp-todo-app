@@ -1,6 +1,7 @@
 ﻿module TodoFSharp.Web.HttpHandlers
 
 open System
+open System.Threading.Tasks
 open Microsoft.AspNetCore.Http
 open TodoFSharp.Web.Dto
 open TodoFSharp.Web.ViewModels
@@ -30,8 +31,20 @@ let todoListHandler name : HttpHandler =
         let view = TodoListPage.view { TodoList = list }
         
         htmlView view next ctx
-        
-        
+
+let createTodoListHandler : HttpHandler =
+    fun (next: HttpFunc) (ctx: HttpContext) ->
+        task {
+            let! model = ctx.BindFormAsync<CreateTodoListForm>()
+            
+            TodoClient.Commands.createTodoList model.Name
+            |> Async.RunSynchronously
+            |> ignore
+            
+            ctx.Response.Redirect("/", false)
+            return! next ctx 
+        }
+
 let addTodoToListHandler name : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
         task {

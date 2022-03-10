@@ -23,6 +23,7 @@ let webApp =
             ]
         POST >=>
             choose [
+                route "/list/create" >=> HttpHandlers.createTodoListHandler
                 routef "/list/%s/todo" HttpHandlers.addTodoToListHandler
                 routef "/list/%s/todo/%s/complete" HttpHandlers.completeTodo
                 routef "/list/%s/todo/%s/incomplete" HttpHandlers.incompleteTodo

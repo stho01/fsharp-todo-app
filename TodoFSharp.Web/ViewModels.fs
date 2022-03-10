@@ -22,3 +22,7 @@ type FrontPage =
     
 type TodoListPage =
     { TodoList: TodoList }
+    
+[<CLIMutable>]
+type CreateTodoListForm =
+    { Name: string }

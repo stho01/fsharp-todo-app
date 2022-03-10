@@ -24,6 +24,11 @@ module Queries =
 
 module Commands =
 
+    let createTodoList name =
+        let POST = HttpMethods.createPostRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
+        
+        POST $"/list/{name}" None 
+    
     let addTodoToList name todo =
         let POST = HttpMethods.createPostRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
         

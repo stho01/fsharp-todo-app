@@ -121,7 +121,7 @@ let newTodoListRequestHandler =
 
 let addTodoToListRequestHandler =
     let validateListName (name, todo) = (TodoListName.create name) |> Result.map (fun name -> (name, todo))
-    let validateTodo (name, todo) = Todo.create todo.Todo |> Result.map (fun todo -> (name, todo))
+    let validateTodo (name, todo) = Todo.create todo.Todo todo.Id |> Result.map (fun todo -> (name, todo))
 
     let validate (name, todo) =
         Ok (name, todo)

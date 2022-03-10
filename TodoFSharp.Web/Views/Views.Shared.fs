@@ -55,12 +55,13 @@ module Shared =
     let createTodoListCard classes =
         div [ _classList (["create-todo-list"; bs.Card; bs.ShadowSm] @ classes) ] [
             form [
-                _action ""
+                _action "/list/create"
                 _method "post"
             ] [
                 div [ _class bs.DFlex ] [
                     input [
                         _type "text"
+                        _name "Name"
                         _classList [
                             bs.H5
                             bs.FormControlPlaintext
