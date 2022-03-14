@@ -9,7 +9,6 @@ open TodoFSharp.WebClient.Serialization
     Generic Http Method calls.
 *)
 
-
 let createGetRequest<'TResponse>
     (client: HttpClient)
     (deserializer: Deserializer<'TResponse>)

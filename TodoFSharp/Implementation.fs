@@ -1,5 +1,6 @@
 ﻿module TodoFSharp.Implementation
 
+open Microsoft.Extensions.Logging
 open TodoFSharp
 open TodoFSharp.Domain
 
@@ -113,3 +114,16 @@ let updateTodo
         |> Result.bind (updateTodo todo)
         |> Result.map saveTodoList
         |> Result.mapError DomainError.FailedToUpdateTodo
+
+let deleteTodolist
+    (logger: ILogger)
+    deleteTodoList
+    : DeleteTodoList =
+        
+        
+    fun name ->
+        let name = TodoListName.value name
+        match deleteTodoList name with
+        | Ok _ -> logger.LogInformation $"To-do list {name} was deleted successfully" 
+        | Error err -> logger.LogError err 
+        ()

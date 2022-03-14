@@ -53,3 +53,11 @@ module Commands =
         let POST = HttpMethods.createPostRequest client Json.serializeToContent Json.strictDeserializer<TodoListDto>
         
         POST $"/list/{name}/todo/{id}/incomplete" None
+        
+    let deleteTodoList name =
+        let DELETE = HttpMethods.createDeleteRequest client id
+        
+        DELETE $"/list/{name}"
+        
+        
+        

@@ -1,6 +1,7 @@
 ﻿module TodoFSharp.Web.HttpHandlers
 
 open System
+open System.Net.Http
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Http
 open TodoFSharp.Web.Dto
@@ -64,7 +65,19 @@ let addTodoToListHandler name : HttpHandler =
                 
             return! next ctx    
         }
-        
+
+let deleteTodoList (name: string) : HttpHandler =
+    fun (next: HttpFunc) (ctx: HttpContext) ->
+        task {
+            
+            TodoClient.Commands.deleteTodoList name
+            |> Async.RunSynchronously
+            |> ignore
+            
+            ctx.Response.Redirect("/", false)
+            return! next ctx
+        }
+
 let removeTodoFromList (name: string, id: string) : HttpHandler =
     fun (next: HttpFunc) (ctx: HttpContext) ->
         task {

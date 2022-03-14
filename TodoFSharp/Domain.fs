@@ -50,6 +50,7 @@ type GetTodo =
 
 type UpdateTodo = Todo -> Result<TodoList, DomainError>
 
+type DeleteTodoList = TodoListName -> unit
 
 // ===============================================
 

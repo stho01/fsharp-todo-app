@@ -72,8 +72,23 @@ let private fetchTodoLists logger page take =
     { Page = page 
       Total = files.Length
       Payload = payload }
+
+
+let fileExists name =
+    if File.Exists name then Ok name else Error $"File {name} does not exist"
     
-        
+let fileRemove name =
+    try 
+        File.Delete name
+        Ok name
+    with
+    | ex -> Error ex.Message 
+    
+let removeTodoList (name: string) =
+    $"data/{name}.json"
+    |> fileExists
+    |> Result.bind fileRemove
+    
 // API ===============================================================
 
 
@@ -174,6 +189,18 @@ let removeTodoFromListRequestHandler =
                         Results.NotFound $"TodoList with name {TodoListName.value name} not found"
                         
             | Error err -> Results.BadRequest err)
+
+let deleteTodoList =
+    Func<ILoggerFactory, string, IResult>(
+        fun loggerFactory name ->
+            let logger = loggerFactory.CreateLogger "deleteTodoList"
+            let workflow = Implementation.deleteTodolist logger removeTodoList
+            
+            match TodoListName.create name with
+            | Ok name ->
+                workflow name
+                Results.Ok()
+            | Error err -> Results.BadRequest(err))
 
 let updateTodoRequestHandler =
     Func<ILoggerFactory, string, TodoDto, IResult>(

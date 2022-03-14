@@ -84,8 +84,8 @@ module Shared =
                 spacer
                 dropdown [
                     dropdownItem [ _classList [ "test" ] ] [
-                        form [ _action $"list/{model.Name}/delete" ] [
-                            button [ _classList [bs.Btn] ] [ iconLabel [] fa.FaTrash "Slett" ]
+                        form [ _action $"list/{model.Name}/delete"; _method "POST" ] [
+                            button [ _classList [bs.Btn]; _type "submit" ] [ iconLabel [] fa.FaTrash "Slett" ]
                         ]
                     ]
                 ]
