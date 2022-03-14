@@ -20,14 +20,15 @@ let private keyValue item =
     | XmlAttribute.KeyValue (k, v) -> (k, v) |> Some
     | _ -> None
 
-let private mergeAttribute (group, (key: string, value: string) list =
-    value.Split " "
-    |> Array.distinct
-    
-let private mergeAttributes (attributes: XmlAttribute list) =
+
+let mergeAttributes (attributes: XmlAttribute list) =
+    let values group =
+        let key = fst group
+        let values = group |> snd |> List.map snd |> List.distinct
+        XmlAttribute.KeyValue (key, values) 
+        
     attributes
     |> List.choose keyValue
     |> List.groupBy fst
-    |> List.map (fun group ->
-        let values = group |> snd |> List.map snd |>  
-        (fst group, values))
+    |> List.map values
+    
