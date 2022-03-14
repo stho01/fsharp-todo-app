@@ -13,8 +13,6 @@ type css = CssClasses<"WebRoot/style/style.css", Naming.PascalCase>
 
 module Shared =
     
-
-        
     let spacer = div [ _class bs.FlexGrow1 ] [] 
     
     let iconLabel attributes icon text =
@@ -24,12 +22,10 @@ module Shared =
         ]
     
     let dropdownItem attributes content =
-        li ([ _class bs.DropdownItem ] @ attributes) content
+        let attributes = mergeAttr [ [ _class bs.DropdownItem ];  attributes ]
+        li attributes content
     
     let dropdown items =
-        
-        let toDropdownItems items = items |> List.map dropdownItem
-        
         div [ _class bs.Dropdown ] [
             button
               [ _classList

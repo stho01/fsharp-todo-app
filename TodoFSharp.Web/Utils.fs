@@ -21,14 +21,24 @@ let private keyValue item =
     | _ -> None
 
 
-let mergeAttributes (attributes: XmlAttribute list) =
+let partial f a b = f(a, b)
+let stringJoin (sep: string) (list: 'a list) =
+    String.Join(sep, list)
+
+let mergeAttr (attributes: XmlAttribute list list) =
     let values group =
         let key = fst group
-        let values = group |> snd |> List.map snd |> List.distinct
+        let values =
+            group
+            |> snd
+            |> List.map snd
+            |> List.distinct
+            |> stringJoin " "
+            
         XmlAttribute.KeyValue (key, values) 
         
     attributes
+    |> List.concat
     |> List.choose keyValue
     |> List.groupBy fst
     |> List.map values
-    
