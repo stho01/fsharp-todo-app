@@ -1,6 +1,7 @@
 ﻿namespace TodoFSharp.Web.Views
 
 open Giraffe.ViewEngine
+open Giraffe.ViewEngine.HtmlElements
 open TodoFSharp.Web.ViewModels
 open Zanaptak.TypedCssClasses
 
@@ -8,37 +9,42 @@ type bs = CssClasses<"WebRoot/style/bootstrap/dist/css/bootstrap.css", Naming.Pa
 type fa = CssClasses<"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", Naming.PascalCase>
 type css = CssClasses<"WebRoot/style/style.css", Naming.PascalCase>
 
+
+
 module Shared =
     
+
+        
     let spacer = div [ _class bs.FlexGrow1 ] [] 
     
+    let iconLabel attributes icon text =
+        span attributes [
+            i [ _classList [fa.Fa; icon; bs.Me2 ] ] []
+            str text
+        ]
+    
+    let dropdownItem attributes content =
+        li ([ _class bs.DropdownItem ] @ attributes) content
+    
     let dropdown items =
-        let dropdownItem item = li [ _class bs.DropdownItem ] [ item ]
+        
         let toDropdownItems items = items |> List.map dropdownItem
         
         div [ _class bs.Dropdown ] [
-            button [
-                _classList [
-                    bs.Btn
-                    css.BtnIcon
-                    bs.BtnSm
-                ]
+            button
+              [ _classList
+                    [ bs.Btn
+                      css.BtnIcon
+                      bs.BtnSm ]
                 _type "button"
-                _data "bs-toggle" "dropdown"
-            ] [
-                i [
-                    _classList [
-                        fa.Fa
-                        fa.FaChevronDown
-                    ]
-                ] []
-            ]
+                _data "bs-toggle" "dropdown" ]
+              [ i [ _classList [ fa.Fa;fa.FaEllipsisV ] ] [] ]
             ul [
                 _classList [
                     bs.DropdownMenu
                     bs.DropdownMenuEnd
                 ]
-            ] (toDropdownItems items)
+            ] items
         ]
     
     let todoListCard (model: TodoList) =
@@ -68,13 +74,8 @@ module Shared =
         
         div [ _classList [bs.Card; "todo-list-card"; bs.Mb2] ] [
             input [ _class "todo-list-card__name"; _type "hidden"; _value model.Name ]
-            div [ _class bs.CardHeader ] [
+            div [ _classList [bs.CardHeader; bs.DFlex] ] [
                  h5 [ _class bs.M0 ] [ encodedText model.Name ]
-                 dropdown [
-                     form [ _action $"list/{model.Name}/delete" ] [
-                         button [] []
-                     ]
-                 ]
             ]
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__todos"] ] todoLists
             div [ _classList [bs.Px3; bs.Py1; bs.DFlex; bs.AlignItemsCenter] ] [
@@ -83,6 +84,16 @@ module Shared =
                 
             ]
             ul [ _classList [bs.ListGroup; bs.ListGroupFlush; "todo-list-card__completed"] ] completed
+            div [ _classList [bs.CardFooter; bs.DFlex] ] [
+                spacer
+                dropdown [
+                    dropdownItem [ _classList [ "test" ] ] [
+                        form [ _action $"list/{model.Name}/delete" ] [
+                            button [ _classList [bs.Btn] ] [ iconLabel [] fa.FaTrash "Slett" ]
+                        ]
+                    ]
+                ]
+            ]
         ]
         
     let createTodoListCard classes =
